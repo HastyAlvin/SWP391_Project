@@ -1,15 +1,19 @@
-import logo from './logo.svg';
-import './App.css';
+import { useEffect, useState } from "react";
+import Router from "./router/Router";
+import publicRoutes from "./router/routes/publicRoutes";
+import { getRoutes } from "./router/routes";
+
+
 
 function App() {
-  return (
-    <div className="App">
+  const [allRoutes, setAllRoutes] = useState([...publicRoutes])
+  //console.log(allRoutes)
 
-      <h1 className="text-3xl font-bold underline">
-        hello world
-      </h1>
-    </div>
-  );
+  useEffect(() => {
+    const routes = getRoutes()
+    setAllRoutes([...allRoutes, routes])
+  }, [])
+  return <Router allRoutes={allRoutes} />
 }
 
 export default App;
