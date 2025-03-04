@@ -18,6 +18,7 @@ export const admin_login = createAsyncThunk(
     }
 )
 
+
 export const seller_login = createAsyncThunk(
     'auth/seller_login',
     async(info,{rejectWithValue, fulfillWithValue}) => {
@@ -34,6 +35,38 @@ export const seller_login = createAsyncThunk(
     }
 )
 
+export const get_user_info = createAsyncThunk(
+    'auth/get_user_info',
+    async(_ ,{rejectWithValue, fulfillWithValue}) => {
+          
+        try {
+            const {data} = await api.get('/get-user',{withCredentials: true})
+            // console.log(data)            
+            return fulfillWithValue(data)
+        } catch (error) {
+            // console.log(error.response.data)
+            return rejectWithValue(error.response.data)
+        }
+    }
+)
+
+
+export const profile_image_upload = createAsyncThunk(
+    'auth/profile_image_upload',
+    async(image ,{rejectWithValue, fulfillWithValue}) => {
+          
+        try {
+            const {data} = await api.post('/profile-image-upload',image,{withCredentials: true})
+            // console.log(data)            
+            return fulfillWithValue(data)
+        } catch (error) {
+            // console.log(error.response.data)
+            return rejectWithValue(error.response.data)
+        }
+    }
+)
+// end method 
+
 export const seller_register = createAsyncThunk(
     'auth/seller_register',
     async(info,{rejectWithValue, fulfillWithValue}) => { 
@@ -49,25 +82,66 @@ export const seller_register = createAsyncThunk(
         }
     }
 )
+
+// end method 
+
+export const profile_info_add = createAsyncThunk(
+    'auth/profile_info_add',
+    async(info,{rejectWithValue, fulfillWithValue}) => { 
+        try { 
+            const {data} = await api.post('/profile-info-add',info,{withCredentials: true}) 
+            return fulfillWithValue(data)
+        } catch (error) {
+            // console.log(error.response.data)
+            return rejectWithValue(error.response.data)
+        }
+    }
+)
+// end method 
+
+
+
+    const returnRole = (token) => {
+        if (token) {
+           const decodeToken = jwtDecode(token)
+           const expireTime = new Date(decodeToken.exp * 1000)
+           if (new Date() > expireTime) {
+             localStorage.removeItem('accessToken')
+             return ''
+           } else {
+                return decodeToken.role
+           }
+            
+        } else {
+            return ''
+        }
+    }
+
+    // end Method 
+
     export const logout = createAsyncThunk(
         'auth/logout',
-        async({navigate,role},{rejectWithValue, fulfillWithValue}) => {
-             
+        async ({ navigate, role }, { rejectWithValue, fulfillWithValue }) => {
             try {
-                const {data} = await api.get('/logout', {withCredentials: true}) 
-                localStorage.removeItem('accessToken') 
+                const { data } = await api.get('/logout', { withCredentials: true });
+                localStorage.removeItem('accessToken');
+    
+                // Thêm log để debug
+                console.log('Logout successful, role:', role);
+    
                 if (role === 'admin') {
-                    navigate('/admin/login')
+                    navigate('/admin/login');
                 } else {
-                    navigate('/login')
+                    navigate('/login');
                 }
-                return fulfillWithValue(data)
+    
+                return fulfillWithValue(data);
             } catch (error) {
-                // console.log(error.response.data)
-                return rejectWithValue(error.response.data)
+                console.error('Logout error:', error);
+                return rejectWithValue(error.response.data);
             }
         }
-    )
+    );
 
         // end Method 
 
@@ -79,7 +153,7 @@ export const authReducer = createSlice({
         errorMessage : '',
         loader: false,
         userInfo : '',
-        role: '',
+        role: returnRole(localStorage.getItem('accessToken')),
         token: localStorage.getItem('accessToken')
     },
     reducers : {
@@ -102,7 +176,58 @@ export const authReducer = createSlice({
             state.loader = false;
             state.successMessage = payload.message
             state.token = payload.token
-            //state.role = returnRole(payload.token)
+            state.role = returnRole(payload.token)
+        })
+
+        .addCase(seller_login.pending, (state, { payload }) => {
+            state.loader = true;
+        }) 
+        .addCase(seller_login.rejected, (state, { payload }) => {
+            state.loader = false;
+            state.errorMessage = payload.error
+        }) 
+        .addCase(seller_login.fulfilled, (state, { payload }) => {
+            state.loader = false;
+            state.successMessage = payload.message
+            state.token = payload.token
+            state.role = returnRole(payload.token)
+        })
+
+        .addCase(seller_register.pending, (state, { payload }) => {
+            state.loader = true;
+        })
+        .addCase(seller_register.rejected, (state, { payload }) => {
+            state.loader = false;
+            state.errorMessage = payload.error
+        }) 
+        .addCase(seller_register.fulfilled, (state, { payload }) => {
+            state.loader = false;
+            state.successMessage = payload.message
+            state.token = payload.token
+            state.role = returnRole(payload.token)
+        })
+
+        .addCase(get_user_info.fulfilled, (state, { payload }) => {
+            state.loader = false;
+            state.userInfo = payload.userInfo
+        })
+
+        .addCase(profile_image_upload.pending, (state, { payload }) => {
+            state.loader = true; 
+        })
+        .addCase(profile_image_upload.fulfilled, (state, { payload }) => {
+            state.loader = false;
+            state.userInfo = payload.userInfo
+            state.successMessage = payload.message
+        })
+
+        .addCase(profile_info_add.pending, (state, { payload }) => {
+            state.loader = true; 
+        })
+        .addCase(profile_info_add.fulfilled, (state, { payload }) => {
+            state.loader = false;
+            state.userInfo = payload.userInfo
+            state.successMessage = payload.message
         })
 
     }
