@@ -139,6 +139,14 @@ const AdminDashboard = () => {
 
             </div>
 
+            <div className='w-full flex flex-wrap mt-7'>
+                <div className='w-full lg:w-12/12 lg:pr-3'>
+                    <div className='w-full bg-[#6a5fdf] p-4 rounded-md'>
+                        <Chart options={state.options} series={state.series} type='bar' height={350} />
+                    </div>
+                </div>
+                
+            </div>
 
 
             <div className='w-full p-4 bg-[#6a5fdf] rounded-md mt-6 hidden'>
