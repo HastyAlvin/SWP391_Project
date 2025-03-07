@@ -1,8 +1,7 @@
 const adminModel = require('../models/adminModel')
 const sellerModel = require('../models/sellerModel')
-const sellerCustomerModel  = require('../models/chat/sellerCustomerModel')
 const { responseReturn } = require('../utiles/response')
-const bcrpty = require('bcrypt')
+const bcrypt = require('bcrypt')
 const { createToken } = require('../utiles/tokenCreate')
 const cloudinary = require('cloudinary').v2
 const formidable = require("formidable")
@@ -15,7 +14,7 @@ class authControllers{
             const admin = await adminModel.findOne({email}).select('+password')
             // console.log(admin)
             if (admin) {
-                const match = await bcrpty.compare(password, admin.password)
+                const match = await bcrypt.compare(password, admin.password)
                 // console.log(match)
                 if (match) {
                     const token = await createToken({
@@ -51,7 +50,7 @@ class authControllers{
             const seller = await sellerModel.findOne({email}).select('+password')
             // console.log(admin)
             if (seller) {
-                const match = await bcrpty.compare(password, seller.password)
+                const match = await bcrypt.compare(password, seller.password)
                 // console.log(match)
                 if (match) {
                     const token = await createToken({
@@ -89,13 +88,11 @@ class authControllers{
                 const seller = await sellerModel.create({
                     name,
                     email,
-                    password: await bcrpty.hash(password, 10),
+                    password: await bcrypt.hash(password, 10),
                     method : 'menualy',
                     shopInfo: {}
                 })
-               await sellerCustomerModel.create({
-                     myId: seller.id
-               })
+             
 
                const token = await createToken({ id : seller.id, role: seller.role })
                res.cookie('accessToken',token, {
