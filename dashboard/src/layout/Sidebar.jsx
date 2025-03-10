@@ -1,38 +1,35 @@
 import React, { useEffect, useState } from 'react';
-import { BiLogOutCircle } from "react-icons/bi";
-import { getNav } from '../navigation/index'
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import api from "../api/api";
+import { getNav } from '../navigation/index';
+import { BiLogOutCircle } from "react-icons/bi";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from '../store/Reducers/authReducer';
+import logo from '../assets/logo.png'
+
 const Sidebar = ({ showSidebar, setShowSidebar }) => {
-    const navigate = useNavigate();
+
+    const dispatch = useDispatch()
+    const { role } = useSelector(state => state.auth)
+    const navigate = useNavigate()
+
     const { pathname } = useLocation()
     const [allNav, setAllNav] = useState([])
     useEffect(() => {
-        const navs = getNav('admin')
+        const navs = getNav(role)
         setAllNav(navs)
-    }, [])
-    console.log(allNav)
-    const handleLogout = async () => {
-        try {
-            const { data } = await api.get('/logout', { withCredentials: true });
-            console.log(data.message); // Hiển thị thông báo từ server
-            navigate('/login'); // Chuyển hướng về trang login
-        } catch (error) {
-            console.error(error.response?.data?.message || "Logout failed");
-        }
-    };
+    }, [role])
+    // console.log(allNav)
+
+
     return (
         <div>
-            <div onClick={() => setShowSidebar(false)} className={`fixed duration-200 ${!showSidebar ?
-                'invisible' : 'visible'} w-screen h-screen bg-[#8cbce780] top-0 left-0 z-10`}>
-
+            <div onClick={() => setShowSidebar(false)} className={`fixed duration-200 ${!showSidebar ? 'invisible' : 'visible'} w-screen h-screen bg-[#8cbce780] top-0 left-0 z-10`} >
             </div>
 
-            <div className={`w-[260px] fixed bg-[#e6e7fb] z-50 top-0 h-screen 
-                shadow-[0_0_15px_0_rgb(34_41_47_/_5%)] transition-all ${showSidebar ? 'left-0' : '-left-[260px] lg:left-0'} `}>
+            <div className={`w-[260px] fixed bg-[#e6e7fb] z-50 top-0 h-screen shadow-[0_0_15px_0_rgb(34_41_47_/_5%)] transition-all ${showSidebar ? 'left-0' : '-left-[260px] lg:left-0'} `}>
                 <div className='h-[70px] flex justify-center items-center'>
                     <Link to='/' className='w-[180px] h-[50px]'>
-                        <img src='http://localhost:3000/images/logo.png' alt='' />
+                        <img className='w-full h-full' src={logo} alt="" />
                     </Link>
                 </div>
 
@@ -40,29 +37,29 @@ const Sidebar = ({ showSidebar, setShowSidebar }) => {
                     <ul>
                         {
                             allNav.map((n, i) => <li key={i}>
-                                <Link to={n.path} className={`${pathname === n.path ?
-                                    'bg-blue-600 shadow-indigo-500/50 text-white duration-500' :
-                                    'text-[#030811] font-bold duration-200 '} px-[12px] py-[9px] rounded-sm 
-                                    flex justify-start items-center gap-[12px] hover:pl-4 transition-all w-full mb-1 `}>
+                                <Link to={n.path} className={`${pathname === n.path ? 'bg-blue-600 shadow-indigo-500/50 text-white duration-500' : 'text-[#030811] font-bold duration-200 '} px-[12px] py-[9px] rounded-sm flex justify-start items-center gap-[12px] hover:pl-4 transition-all w-full mb-1 `} >
                                     <span>{n.icon}</span>
                                     <span>{n.title}</span>
                                 </Link>
+
                             </li>)
                         }
 
-
                         <li>
-                            <button onClick={handleLogout} className='text-[#030811] font-bold duration-200 } px-[12px] py-[9px] rounded-sm 
-                                    flex justify-start items-center gap-[12px] hover:pl-4 transition-all w-full mb-1'>
+                            <button onClick={() => dispatch(logout({ navigate, role }))} className='text-[#030811] font-bold duration-200 px-[12px] py-[9px] rounded-sm flex justify-start items-center gap-[12px] hover:pl-4 transition-all w-full mb-1'>
                                 <span><BiLogOutCircle /></span>
                                 <span>Logout</span>
                             </button>
                         </li>
 
 
+
                     </ul>
+
                 </div>
+
             </div>
+
         </div>
     );
 };
