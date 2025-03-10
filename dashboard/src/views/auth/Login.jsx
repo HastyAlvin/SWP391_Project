@@ -32,20 +32,20 @@ const Login = () => {
         dispatch(seller_login(state))
     }
 
-    // useEffect(() => {
+    useEffect(() => {
 
-    //     if (successMessage) {
-    //         toast.success(successMessage)
-    //         dispatch(messageClear()) 
-    //         navigate('/') 
-    //     }
-    //     if (errorMessage) {
-    //         toast.error(errorMessage)
-    //         dispatch(messageClear())
-    //     }
+        if (successMessage) {
+            toast.success(successMessage)
+            dispatch(messageClear()) 
+            navigate('/') 
+        }
+        if (errorMessage) {
+            toast.error(errorMessage)
+            dispatch(messageClear())
+        }
         
 
-    // },[successMessage,errorMessage])
+    },[successMessage,errorMessage])
 
 
     return (
@@ -70,10 +70,10 @@ const Login = () => {
   
 
         <button disabled={loader ? true : false}  className='bg-slate-800 w-full hover:shadow-blue-300/ hover:shadow-lg text-white rounded-md px-7 py-2 mb-3'>
-            {/* {
+            {
                loader ? <PropagateLoader color='#fff' cssOverride={overrideStyle} /> : 'Sing In'
-            }  */}
-            Sign in
+            } 
+            {/* Sign in */}
             </button>
 
         <div className='flex items-center mb-3 gap-3 justify-center'>
