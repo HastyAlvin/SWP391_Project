@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { BiLogOutCircle } from "react-icons/bi";
 import { getNav } from '../navigation/index'
-import { Link, useLocation } from 'react-router-dom';
-
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import api from "../api/api";
 const Sidebar = ({ showSidebar, setShowSidebar }) => {
-
+    const navigate = useNavigate();
     const { pathname } = useLocation()
     const [allNav, setAllNav] = useState([])
     useEffect(() => {
@@ -12,7 +12,15 @@ const Sidebar = ({ showSidebar, setShowSidebar }) => {
         setAllNav(navs)
     }, [])
     console.log(allNav)
-
+    const handleLogout = async () => {
+        try {
+            const { data } = await api.get('/logout', { withCredentials: true });
+            console.log(data.message); // Hiển thị thông báo từ server
+            navigate('/login'); // Chuyển hướng về trang login
+        } catch (error) {
+            console.error(error.response?.data?.message || "Logout failed");
+        }
+    };
     return (
         <div>
             <div onClick={() => setShowSidebar(false)} className={`fixed duration-200 ${!showSidebar ?
@@ -44,7 +52,7 @@ const Sidebar = ({ showSidebar, setShowSidebar }) => {
 
 
                         <li>
-                            <button className='text-[#030811] font-bold duration-200 } px-[12px] py-[9px] rounded-sm 
+                            <button onClick={handleLogout} className='text-[#030811] font-bold duration-200 } px-[12px] py-[9px] rounded-sm 
                                     flex justify-start items-center gap-[12px] hover:pl-4 transition-all w-full mb-1'>
                                 <span><BiLogOutCircle /></span>
                                 <span>Logout</span>
