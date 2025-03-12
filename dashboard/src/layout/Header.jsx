@@ -13,10 +13,17 @@ const Header = ({ showSidebar, setShowSidebar }) => {
         <div onClick={() => setShowSidebar(!showSidebar)} className='w-[35px] flex lg:hidden h-[35px] rounded-sm bg-indigo-500 shadow-lg hover:shadow-indigo-500/50 justify-center items-center cursor-pointer ' >
           <span><FaList /></span>
         </div>
-
         <div className='hidden md:block'>
-          <input className='px-3 py-2 outline-none border bg-transparent border-slate-700 rounded-md text-[#423d72] focus:border-indigo-300 overflow-hidden' type="text" name='search' placeholder='search' />
+          <input
+            className='w-[250px] px-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-700 
+               focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-500 
+               transition-all duration-300 shadow-sm placeholder-gray-400'
+            type="text"
+            name='search'
+            placeholder='🔍 Search...'
+          />
         </div>
+
 
         <div className='flex justify-center items-center gap-8 relative'>
           <div className='flex justify-center items-center'>
