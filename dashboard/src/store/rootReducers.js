@@ -6,13 +6,13 @@ import authReducer from "./Reducers/authReducer";
 // import chatReducer from "./Reducers/chatReducer";
 import dashboardReducer from "./Reducers/dashboardReducer";
 // import productReducer from "./Reducers/productReducer";
-// import sellerReducer from "./Reducers/sellerReducer";
+import sellerReducer from "./Reducers/sellerReducer";
 
 const rootReducer = {
     auth: authReducer,
     // category: categoryReducer,
     // product: productReducer,
-    // seller: sellerReducer,
+    seller: sellerReducer,
     // chat: chatReducer,
     // order: OrderReducer,
     // payment: PaymentReducer,

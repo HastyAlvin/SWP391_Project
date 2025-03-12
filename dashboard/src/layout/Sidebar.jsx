@@ -29,7 +29,9 @@ const Sidebar = ({ showSidebar, setShowSidebar }) => {
             <div className={`w-[260px] fixed bg-[#e6e7fb] z-50 top-0 h-screen shadow-[0_0_15px_0_rgb(34_41_47_/_5%)] transition-all ${showSidebar ? 'left-0' : '-left-[260px] lg:left-0'} `}>
                 <div className='h-[70px] flex justify-center items-center'>
                     <Link to='/' className='w-[180px] h-[50px]'>
-                        <img className='w-full h-full' src={logo} alt="" />
+                        <div>
+                            <h1 className="text-2xl text-white font-bold">SPORTY ZONE</h1>
+                        </div>
                     </Link>
                 </div>
 
@@ -46,7 +48,9 @@ const Sidebar = ({ showSidebar, setShowSidebar }) => {
                         }
 
                         <li>
-                            <button onClick={() => dispatch(logout({ navigate, role }))} className='text-[#030811] font-bold duration-200 px-[12px] py-[9px] rounded-sm flex justify-start items-center gap-[12px] hover:pl-4 transition-all w-full mb-1'>
+                            <button onClick={() => dispatch(logout({ navigate, role })).then(() => {
+                                window.location.reload();
+                            })} className='text-[#030811] font-bold duration-200 px-[12px] py-[9px] rounded-sm flex justify-start items-center gap-[12px] hover:pl-4 transition-all w-full mb-1'>
                                 <span><BiLogOutCircle /></span>
                                 <span>Logout</span>
                             </button>
