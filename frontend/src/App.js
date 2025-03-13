@@ -13,8 +13,6 @@ import Register from './components/Register';
 import Card from './pages/Card';
 
 
-
-
 function App() {
   const dispatch = useDispatch()
   useEffect(() => {
@@ -32,7 +30,6 @@ function App() {
       <Route path='/products/search?' element={<SearchProducts/>} />
       <Route path='/product/details/:slug' element={<Details/>} />
       <Route path='/card' element={<Card/>} />
-
       
     </Routes>
     
