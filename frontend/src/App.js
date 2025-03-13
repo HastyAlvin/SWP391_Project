@@ -10,7 +10,7 @@ import SearchProducts from './pages/SearchProducts';
 import Shops from './pages/Shops';
 import Login from './components/Login';
 import Register from './components/Register';
-
+import Card from './pages/Card';
 
 
 function App() {
@@ -29,6 +29,7 @@ function App() {
       <Route path='/shops' element={<Shops/>} />
       <Route path='/products/search?' element={<SearchProducts/>} />
       <Route path='/product/details/:slug' element={<Details/>} />
+      <Route path='/card' element={<Card/>} />
       
     </Routes>
     
