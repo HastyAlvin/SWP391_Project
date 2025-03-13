@@ -6,6 +6,8 @@ import Home from './pages/Home';
 import { get_category } from './store/reducers/homeReducer';
 import { useDispatch} from 'react-redux';
 import Details from './pages/Details';
+import SearchProducts from './pages/SearchProducts';
+
 
 
 function App() {
@@ -20,6 +22,7 @@ function App() {
     <Routes>
       <Route path='/' element={<Home/>} />
       <Route path='/product/details/:slug' element={<Details/>} />
+      <Route path='/products/search?' element={<SearchProducts/>} />
     </Routes>
     
     </BrowserRouter>
