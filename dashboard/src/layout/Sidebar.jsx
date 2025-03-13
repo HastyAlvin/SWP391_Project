@@ -30,7 +30,7 @@ const Sidebar = ({ showSidebar, setShowSidebar }) => {
                 <div className='h-[70px] flex justify-center items-center'>
                     <Link to='/' className='w-[180px] h-[50px]'>
                         <div>
-                            <h1 className="text-2xl text-white font-bold">SPORTY ZONE</h1>
+                            <h1 className="text-2xl text-black font-bold">SPORTY ZONE</h1>
                         </div>
                     </Link>
                 </div>
