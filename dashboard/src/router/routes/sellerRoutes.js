@@ -2,6 +2,7 @@ import { lazy } from "react";
 
 
 
+
 const SellerDashboard = lazy(() => import('../../views/seller/SellerDashboard'))
 const Pending = lazy(() => import('./../../views/Pending'))
 const Deactive = lazy(() => import('./../../views/Deactive'))
@@ -13,7 +14,7 @@ const Products = lazy(() => import('../../views/seller/Products'))
 // const Payments = lazy(() => import('../../views/seller/Payments'))
 // const SellerToAdmin = lazy(() => import('../../views/seller/SellerToAdmin'))
 // const SellerToCustomer = lazy(() => import('../../views/seller/SellerToCustomer'))
-// const EditProduct = lazy(() => import('../../views/seller/EditProduct'))
+const EditProduct = lazy(() => import('../../views/seller/EditProduct'))
 // const OrderDetails = lazy(() => import('../../views/seller/OrderDetails'))
 // const AddBanner = lazy(() => import('../../views/seller/AddBanner'))
 
@@ -41,12 +42,12 @@ export const sellerRoutes = [
     role: 'seller',
     status: 'active'
   },
-  // {
-  //     path: '/seller/dashboard/edit-product/:productId',
-  //     element : <EditProduct/>,
-  //     role : 'seller',
-  //     status : 'active'
-  // },
+  {
+    path: '/seller/dashboard/edit-product/:productId',
+    element: <EditProduct />,
+    role: 'seller',
+    status: 'active'
+  },
   {
     path: '/seller/dashboard/products',
     element: <Products />,
