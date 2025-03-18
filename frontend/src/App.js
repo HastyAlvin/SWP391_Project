@@ -11,6 +11,14 @@ import Shops from './pages/Shops';
 import Login from './components/Login';
 import Register from './components/Register';
 import Card from './pages/Card';
+import Shipping from './pages/Shipping';
+
+
+import ProtectUser from './utils/ProtectUser';
+import Dashboard from './pages/Dashboard';
+import Index from './components/dashboard/Index';
+import Orders from './components/dashboard/Orders';
+import OrderDetails from './components/dashboard/OrderDetails';
 
 
 function App() {
@@ -30,7 +38,20 @@ function App() {
       <Route path='/products/search?' element={<SearchProducts/>} />
       <Route path='/product/details/:slug' element={<Details/>} />
       <Route path='/card' element={<Card/>} />
+      <Route path='/shipping' element={<Shipping/>} />
+
       
+      <Route path='/dashboard' element={<ProtectUser/>} >
+      <Route path='' element={<Dashboard/>} >        
+      <Route path='' element={<Index/>} />
+      <Route path='my-orders' element={<Orders/>} /> 
+      <Route path='order/details/:orderId' element={<OrderDetails/>} /> 
+       
+       </Route> 
+      </Route>
+
+
+
     </Routes>
     
     </BrowserRouter>
