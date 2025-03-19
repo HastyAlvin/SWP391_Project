@@ -1,7 +1,5 @@
 import { lazy } from "react";
 
-
-
 const OrderDetails = lazy(() => import("../../views/admin/OrderDetails"));
 const AdminDashboard = lazy(() => import("../../views/admin/AdminDashboard"));
 const Orders = lazy(() => import("../../views/admin/Order"));
@@ -9,6 +7,8 @@ const Category = lazy(() => import("../../views/admin/Category"));
 const DeactiveSellers = lazy(() => import("../../views/admin/DeactiveSellers"));
 const SellerRequest = lazy(() => import("../../views/admin/SellerRequest"));
 const SellerDetails = lazy(() => import("../../views/admin/SellerDetails"));
+const Sellers = lazy(()=> import('../../views/admin/Sellers'))
+
 export const adminRoutes = [
   {
     path: "admin/dashboard",
@@ -28,9 +28,14 @@ export const adminRoutes = [
     role: "admin",
   },
   {
+    path: "admin/dashboard/sellers",
+    element: <Sellers />,
+    role: "admin",
+  },
+  {
     path: "admin/dashboard/order/details/:orderId",
     element: <OrderDetails />,
-    role: 'admin',
+    role: "admin",
   },
 
   {

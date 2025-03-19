@@ -1,5 +1,5 @@
-// import OrderReducer from "./Reducers/OrderReducer";
-// import PaymentReducer from "./Reducers/PaymentReducer";
+import OrderReducer from "./Reducers/OrderReducer";
+import PaymentReducer from "./Reducers/PaymentReducer";
 import authReducer from "./Reducers/authReducer";
 // import bannerReducer from "./Reducers/bannerReducer";
 import categoryReducer from "./Reducers/categoryReducer";
@@ -14,8 +14,8 @@ const rootReducer = {
     product: productReducer,
     seller: sellerReducer,
     // chat: chatReducer,
-    // order: OrderReducer,
-    // payment: PaymentReducer,
+    order: OrderReducer,
+    payment: PaymentReducer,
     dashboard: dashboardReducer,
     // banner: bannerReducer
 }
