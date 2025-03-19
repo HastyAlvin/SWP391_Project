@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import Pagination from '../Pagination';
 import { FaEdit, FaEye, FaTrash } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
-import { get_products } from '../../store/Reducers/productReducer';
+import { get_products, deleteProduct } from '../../store/Reducers/productReducer';
 import { LuImageMinus } from "react-icons/lu";
 
 
@@ -27,6 +27,13 @@ const Products = () => {
         dispatch(get_products(obj))
 
     }, [searchValue, currentPage, parPage])
+
+    const handleDelete = (id) => {
+        if (window.confirm('Are you sure to delete product?')) {
+            console.log("delete product id", id);
+            dispatch(deleteProduct(id));
+        }
+    }
 
     return (
         <div className='px-2 lg:px-7 pt-5'>
@@ -78,10 +85,7 @@ const Products = () => {
                                         <div className='flex justify-start items-center gap-4'>
                                             <Link to={`/seller/dashboard/edit-product/${d._id}`} className='p-[6px] bg-yellow-500 rounded hover:shadow-lg hover:shadow-yellow-500/50'> <FaEdit /> </Link>
 
-
-
-                                            <Link className='p-[6px] bg-green-500 rounded hover:shadow-lg hover:shadow-green-500/50'> <FaEye /> </Link>
-                                            <Link className='p-[6px] bg-red-500 rounded hover:shadow-lg hover:shadow-red-500/50'> <FaTrash /> </Link>
+                                            <Link className='p-[6px] bg-red-500 rounded hover:shadow-lg hover:shadow-red-500/50' onClick={() => handleDelete(d._id)}   > <FaTrash /> </Link>
                                         </div>
 
                                     </td>
