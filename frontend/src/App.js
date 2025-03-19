@@ -19,6 +19,7 @@ import Index from "./components/dashboard/Index";
 import Orders from "./components/dashboard/Orders";
 import OrderDetails from "./components/dashboard/OrderDetails";
 import Payment from "./pages/Payment";
+import Wishlist from "./components/dashboard/Wishlist";
 
 function App() {
   const dispatch = useDispatch();
@@ -42,6 +43,7 @@ function App() {
         <Route path="/dashboard" element={<ProtectUser />}>
           <Route path="" element={<Dashboard />}>
             <Route path="" element={<Index />} />
+            <Route path='my-wishlist' element={<Wishlist/>} /> 
             <Route path="my-orders" element={<Orders />} />
             <Route path="order/details/:orderId" element={<OrderDetails />} />
           </Route>
