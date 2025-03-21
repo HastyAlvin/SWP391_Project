@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import { admin_order_status_update, get_admin_order, messageClear } from '../../store/Reducers/OrderReducer';
+import { get_seller_order, messageClear, seller_order_status_update } from '../../store/Reducers/OrderReducer';
 import toast from 'react-hot-toast';
 
 const OrderDetails = () => {
@@ -9,20 +9,20 @@ const OrderDetails = () => {
     const { orderId } = useParams()
     const dispatch = useDispatch()
     const [status, setStatus] = useState('')
+
     const { order, errorMessage, successMessage } = useSelector(state => state.order)
 
     useEffect(() => {
         setStatus(order?.delivery_status)
     }, [order])
 
+
     useEffect(() => {
-        dispatch(get_admin_order(orderId))
+        dispatch(get_seller_order(orderId))
     }, [orderId])
 
-
-
     const status_update = (e) => {
-        dispatch(admin_order_status_update({ orderId, info: { status: e.target.value } }))
+        dispatch(seller_order_status_update({ orderId, info: { status: e.target.value } }))
         setStatus(e.target.value)
     }
 
@@ -61,12 +61,8 @@ const OrderDetails = () => {
                         <div className='w-[30%]'>
                             <div className='pr-3 text-[#d0d2d6] text-lg'>
                                 <div className='flex flex-col gap-1'>
-                                    <h2 className='pb-2 font-semibold'>Deliver To : {order.shippingInfo?.name} </h2>
-                                    <p><span className='text-sm'>
-                                        {order.shippingInfo?.address}
-                                        {order.shippingInfo?.province}
-                                        {order.shippingInfo?.city}
-                                        {order.shippingInfo?.area}</span></p>
+                                    <h2 className='pb-2 font-semibold'>Deliver To : {order.shippingInfo} </h2>
+
                                 </div>
                                 <div className='flex justify-start items-center gap-3'>
                                     <h2>Payment Status: </h2>
@@ -74,75 +70,31 @@ const OrderDetails = () => {
                                 </div>
                                 <span>Price : ${order.price}</span>
 
-                                <div className='mt-4 flex flex-col gap-4 bg-[#8288ed] rounded-md'>
-                                    <div className='text-[#d0d2d6]'>
-                                        {
-                                            order.products && order.products.map((p, i) => <div key={i} className='flex gap-3 text-md'>
+                                {
+                                    order?.products?.map((p, i) => <div key={i} className='mt-4 flex flex-col gap-4 bg-[#8288ed] rounded-md'>
+                                        <div className='text-[#d0d2d6]'>
+                                            <div className='flex gap-3 text-md'>
                                                 <img className='w-[50px] h-[50px]' src={p.images[0]} alt="" />
 
                                                 <div>
-                                                    <h2>{p.name} </h2>
+                                                    <h2>{p.name}</h2>
                                                     <p>
                                                         <span>Brand : </span>
                                                         <span>{p.brand}</span>
                                                         <span className='text-lg'>Quantity : {p.quantity} </span>
                                                     </p>
                                                 </div>
-                                            </div>)
-                                        }
-
-
-                                    </div>
-                                </div>
-
-
-
-
-                            </div>
-                        </div>
-
-                        <div className='w-[70%]'>
-                            <div className='pl-3'>
-                                <div className='mt-4 flex flex-col bg-[#8288ed] rounded-md p-4'>
-
-
-                                    {
-                                        order?.suborder?.map((o, i) => <div key={i + 20} className='text-[#d0d2d6] mt-2'>
-                                            <div className='flex justify-start items-center gap-3'>
-                                                <h2>Seller {i + 1}   Order : </h2>
-                                                <span>{o.delivery_status}</span>
                                             </div>
+                                        </div>
+                                    </div>)
+                                }
 
-                                            {
-                                                o.products?.map((p, i) => <div className='flex gap-3 text-md mt-2'>
-                                                    <img className='w-[50px] h-[50px]' src={p.images[0]} alt="" />
-
-                                                    <div>
-                                                        <h2>{p.name} </h2>
-                                                        <p>
-                                                            <span>Brand : </span>
-                                                            <span>{p.brand}</span>
-                                                            <span className='text-lg'>Quantity : {p.quantity} </span>
-                                                        </p>
-                                                    </div>
-                                                </div>)
-                                            }
-
-
-                                        </div>)
-                                    }
-
-
-
-
-                                </div>
-
-                            </div>
-                        </div>
 
 
 
 
+                            </div>
+                        </div>
 
 
 
