@@ -108,8 +108,12 @@ const Header = () => {
                         <div className='md-lg:w-full w-3/12 md-lg:pt-4'>
                             <div className='flex justify-between items-center'>
 
-                                <Link to='/'>
-                                    <h1 className="text-xl text-black font-bold" src="http://localhost:3000/" >SPORTY ZONE</h1>
+                                <Link
+                                    to="/"
+                                    className="flex items-center gap-2 text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-blue-500"
+                                >
+                                    <span className="text-white animate-spin text-3xl">⚽</span>
+                                    SPORTY ZONE
                                 </Link>
                                 <div className='justify-center items-center w-[30px] h-[30px] bg-white text-slate-600 border border-slate-600 rounded-sm cursor-pointer lg:hidden md-lg:flex xl:hidden hidden' onClick={() => setShowShidebar(false)}>
                                     <span> <FaList /> </span>
