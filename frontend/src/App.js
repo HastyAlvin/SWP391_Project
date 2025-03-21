@@ -12,6 +12,7 @@ import Login from "./components/Login";
 import Register from "./components/Register";
 import Card from "./pages/Card";
 import Shipping from "./pages/Shipping";
+import ConfirmOrder from './pages/ConfirmOrder';
 
 import ProtectUser from "./utils/ProtectUser";
 import Dashboard from "./pages/Dashboard";
@@ -39,6 +40,8 @@ function App() {
         <Route path="/card" element={<Card />} />
         <Route path="/shipping" element={<Shipping />} />
         <Route path="/payment" element={<Payment />} />
+        <Route path='/order/confirm?' element={<ConfirmOrder/>} /> 
+
 
         <Route path="/dashboard" element={<ProtectUser />}>
           <Route path="" element={<Dashboard />}>
