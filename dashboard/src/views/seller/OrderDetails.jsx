@@ -69,6 +69,7 @@ const OrderDetails = () => {
                                     <span className='text-base'>{order.payment_status}</span>
                                 </div>
                                 <span>Price : ${order.price}</span>
+
                                 {
                                     order?.products?.map((p, i) => <div key={i} className='mt-4 flex flex-col gap-4 bg-[#8288ed] rounded-md'>
                                         <div className='text-[#d0d2d6]'>
@@ -90,6 +91,7 @@ const OrderDetails = () => {
                             </div>
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>

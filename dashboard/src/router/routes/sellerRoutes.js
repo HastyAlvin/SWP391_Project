@@ -65,10 +65,10 @@ export const sellerRoutes = [
     visibility: ["active", "deactive"],
   },
   {
-      path: '/seller/dashboard/order/details/:orderId',
-      element : <OrderDetails/>,
-      role : 'seller',
-      visibility : ['active','deactive']
+    path: '/seller/dashboard/order/details/:orderId',
+    element: <OrderDetails />,
+    role: 'seller',
+    visibility: ['active', 'deactive']
   },
   {
     path: "/seller/dashboard/payments",
