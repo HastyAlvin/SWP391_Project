@@ -117,7 +117,6 @@ const Profile = () => {
                             </div>
                         </div>
 
-
                         <div className='px-0 md:px-5 py-2'>
                             {
                                 !userInfo?.shopInfo ? <form onSubmit={add}>

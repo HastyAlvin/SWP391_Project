@@ -88,18 +88,9 @@ const OrderDetails = () => {
                                         </div>
                                     </div>)
                                 }
-
-
-
-
-
                             </div>
                         </div>
-
-
-
                     </div>
-
 
                 </div>
             </div>

@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import { admin_order_status_update, get_admin_order, messageClear } from '../../store/Reducers/OrderReducer';
+import { admin_order_status_update, get_admin_order,messageClear} from '../../store/Reducers/OrderReducer';
 import toast from 'react-hot-toast';
 
 const OrderDetails = () => {
-
     const { orderId } = useParams()
     const dispatch = useDispatch()
     const [status, setStatus] = useState('')
@@ -50,12 +49,25 @@ const OrderDetails = () => {
                         <option value="cancelled">cancelled</option>
                     </select>
                 </div>
-
+                </div>  
                 <div className='p-4'>
                     <div className='flex gap-2 text-lg text-[#d0d2d6]'>
                         <h2>#{order._id}</h2>
                         <span>{order.date}</span>
                     </div>
+                </div> 
+
+    <div className='w-[70%]'>
+        <div className='pl-3'>
+            <div className='mt-4 flex flex-col bg-[#8288ed] rounded-md p-4'>
+               
+
+            {
+                order?.suborder?.map((o,i) => <div key={i + 20} className='text-[#d0d2d6] mt-2'>
+                <div className='flex justify-start items-center gap-3'>
+                    <h2>Seller {i + 1}   Order : </h2>
+                    <span>{o.delivery_status}</span> 
+                </div>
 
                     <div className='flex flex-wrap'>
                         <div className='w-[30%]'>
@@ -140,17 +152,15 @@ const OrderDetails = () => {
                             </div>
                         </div>
 
-
-
-
-
-
-
                     </div>
 
 
                 </div>
             </div>
+
+
+        </div>   
+        </div> 
         </div>
     );
 };
