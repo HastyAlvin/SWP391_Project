@@ -14,7 +14,7 @@ const Payments = lazy(() => import('../../views/seller/Payments'))
 // const SellerToAdmin = lazy(() => import('../../views/seller/SellerToAdmin'))
 // const SellerToCustomer = lazy(() => import('../../views/seller/SellerToCustomer'))
 const EditProduct = lazy(() => import('../../views/seller/EditProduct'))
-// const OrderDetails = lazy(() => import('../../views/seller/OrderDetails'))
+const OrderDetails = lazy(() => import('../../views/seller/OrderDetails'))
 // const AddBanner = lazy(() => import('../../views/seller/AddBanner'))
 
 export const sellerRoutes = [
@@ -64,12 +64,12 @@ export const sellerRoutes = [
     role: "seller",
     visibility: ["active", "deactive"],
   },
-  // {
-  //     path: '/seller/dashboard/order/details/:orderId',
-  //     element : <OrderDetails/>,
-  //     role : 'seller',
-  //     visibility : ['active','deactive']
-  // },
+  {
+      path: '/seller/dashboard/order/details/:orderId',
+      element : <OrderDetails/>,
+      role : 'seller',
+      visibility : ['active','deactive']
+  },
   {
     path: "/seller/dashboard/payments",
     element: <Payments />,
