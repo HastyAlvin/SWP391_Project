@@ -1,7 +1,7 @@
 import OrderReducer from "./Reducers/OrderReducer";
 import PaymentReducer from "./Reducers/PaymentReducer";
 import authReducer from "./Reducers/authReducer";
-// import bannerReducer from "./Reducers/bannerReducer";
+import bannerReducer from "./Reducers/bannerReducer";
 import categoryReducer from "./Reducers/categoryReducer";
 // import chatReducer from "./Reducers/chatReducer";
 import dashboardReducer from "./Reducers/dashboardReducer";
@@ -17,6 +17,6 @@ const rootReducer = {
     order: OrderReducer,
     payment: PaymentReducer,
     dashboard: dashboardReducer,
-    // banner: bannerReducer
+    banner: bannerReducer
 }
 export default rootReducer;
