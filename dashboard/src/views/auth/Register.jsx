@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom'
-import { FaGoogle } from "react-icons/fa";
-import { FaFacebook } from "react-icons/fa";
+import { Link, useNavigate } from 'react-router-dom';
+import { FaGoogle, FaFacebook } from "react-icons/fa";
 import { useDispatch, useSelector } from 'react-redux';
 import { PropagateLoader } from 'react-spinners';
 import { overrideStyle } from '../../utils/utils';
@@ -9,115 +8,118 @@ import { seller_register, messageClear } from '../../store/Reducers/authReducer'
 import toast from 'react-hot-toast';
 
 const Register = () => {
-
-    const navigate = useNavigate()
-
-    const dispatch = useDispatch()
-
-    const { loader, successMessage, errorMessage } = useSelector(state => state.auth)
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const { loader, successMessage, errorMessage } = useSelector(state => state.auth);
 
     const [state, setState] = useState({
         name: "",
         email: "",
         password: ""
-    })
+    });
+
+    const [errors, setErrors] = useState({
+        email: "",
+        password: ""
+    });
+
+    const validateEmail = (email) => {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    };
+
+    const validatePassword = (password) => {
+        return password.length >= 6;
+    };
 
     const inputHandle = (e) => {
-        setState({
-            ...state,
-            [e.target.name]: e.target.value
-        })
-    }
+        const { name, value } = e.target;
+        setState({ ...state, [name]: value });
+
+        if (name === "email") {
+            setErrors({ ...errors, email: validateEmail(value) ? "" : "Invalid email format!" });
+        }
+
+        if (name === "password") {
+            setErrors({ ...errors, password: validatePassword(value) ? "" : "Password must be at least 6 characters!" });
+        }
+    };
 
     const submit = (e) => {
-        e.preventDefault()
-        dispatch(seller_register(state))
-    }
+        e.preventDefault();
+
+        if (!validateEmail(state.email)) {
+            setErrors({ ...errors, email: "Invalid email format!" });
+            return;
+        }
+
+        if (!validatePassword(state.password)) {
+            setErrors({ ...errors, password: "Password must be at least 6 characters!" });
+            return;
+        }
+
+        dispatch(seller_register(state));
+    };
 
     useEffect(() => {
-
         if (successMessage) {
-            toast.success(successMessage)
-            dispatch(messageClear())
-            navigate('/')
+            toast.success(successMessage);
+            dispatch(messageClear());
+            navigate('/');
         }
         if (errorMessage) {
-            toast.error(errorMessage)
-            dispatch(messageClear())
+            toast.error(errorMessage);
+            dispatch(messageClear());
         }
-
-
-    }, [successMessage, errorMessage])
-
-
-
+    }, [successMessage, errorMessage]);
 
     return (
-        <div className='min-w-screen min-h-screen bg-[#cdcae9] flex justify-center items-center' >
-            <div className='w-[350px] text-[#ffffff] p-2'>
-                <div className='bg-[#6f68d1] p-4 rounded-md'>
-                    <h2 className='text-xl mb-3 font-bold'>Welcome to Ecommerce</h2>
-                    <p className='text-sm mb-3 font-medium'>Please register your account</p>
+        <div className='min-h-screen flex justify-center items-center bg-gradient-to-r from-indigo-400 to-purple-500'>
+            <div className='w-[380px] bg-white p-6 rounded-lg shadow-lg'>
+                <h2 className='text-2xl font-bold text-gray-700 text-center mb-3'>Create Your Account</h2>
+                <p className='text-gray-500 text-center mb-5'>Sign up to become a seller</p>
 
-                    <form onSubmit={submit}>
-                        <div className='flex flex-col w-full gap-1 mb-3'>
-                            <label htmlFor="name">Name</label>
-                            <input onChange={inputHandle} value={state.name} className='px-3 py-2 outline-none border border-slate-400 bg-transparent rounded-md' type="text" name='name' placeholder='Name' id='name' required />
+                <form onSubmit={submit}>
+                    <div className='flex flex-col mb-4'>
+                        <label htmlFor="name" className='text-gray-700 font-medium'>Name</label>
+                        <input 
+                            onChange={inputHandle} 
+                            value={state.name} 
+                            className='px-4 py-2 border rounded-md focus:ring-2 focus:ring-indigo-300 outline-none' 
+                            type="text" name='name' id='name' placeholder='Enter your name' required
+                        />
+                    </div>
 
-                        </div>
+                    <div className='flex flex-col mb-4'>
+                        <label htmlFor="email" className='text-gray-700 font-medium'>Email</label>
+                        <input 
+                            onChange={inputHandle} 
+                            value={state.email} 
+                            className='px-4 py-2 border rounded-md focus:ring-2 focus:ring-indigo-300 outline-none' 
+                            type="email" name='email' id='email' placeholder='Enter email' required
+                        />
+                        {errors.email && <p className='text-red-500 text-sm mt-1'>{errors.email}</p>}
+                    </div>
 
+                    <div className='flex flex-col mb-4'>
+                        <label htmlFor="password" className='text-gray-700 font-medium'>Password</label>
+                        <input 
+                            onChange={inputHandle} 
+                            value={state.password} 
+                            className='px-4 py-2 border rounded-md focus:ring-2 focus:ring-indigo-300 outline-none' 
+                            type="password" name='password' id='password' placeholder='Enter password' required
+                        />
+                        {errors.password && <p className='text-red-500 text-sm mt-1'>{errors.password}</p>}
+                    </div>
 
-                        <div className='flex flex-col w-full gap-1 mb-3'>
-                            <label htmlFor="email">Email</label>
-                            <input onChange={inputHandle} value={state.email} className='px-3 py-2 outline-none border border-slate-400 bg-transparent rounded-md' type="email" name='email' placeholder='Email' id='email' required />
+                    <button disabled={loader} className='bg-indigo-600 w-full text-white rounded-md px-4 py-2 hover:bg-indigo-700 transition duration-300'>
+                        {loader ? <PropagateLoader color='#fff' cssOverride={overrideStyle} /> : 'Sign Up'}
+                    </button>
+                </form>
 
-                        </div>
-
-                        <div className='flex flex-col w-full gap-1 mb-3'>
-                            <label htmlFor="password">Password</label>
-                            <input onChange={inputHandle} value={state.password} className='px-3 py-2 outline-none border border-slate-400 bg-transparent rounded-md' type="password" name='password' placeholder='Password' id='password' required />
-                        </div>
-
-                        <div className='flex items-center w-full gap-3 mb-3'>
-                            <input className='w-4 h-4 text-blue-600 overflow-hidden bg-gray-200 rounded border-gray-300 focus:ring-blue-500' type="checkbox" name="checkbox" id="checkbox" />
-                            <label htmlFor="checkbox"> I agree to privacy policy & treams</label>
-                        </div>
-
-                        <button disabled={loader ? true : false} className='bg-slate-800 w-full hover:shadow-blue-300/ hover:shadow-lg text-white rounded-md px-7 py-2 mb-3'>
-                            {
-                                loader ? <PropagateLoader color='#fff' cssOverride={overrideStyle} /> : 'Sign Up'
-                            }
-                        </button>
-
-                        <div className='flex items-center mb-3 gap-3 justify-center'>
-                            <p>Already Have an account ? <Link className='font-bold' to="/login">Sign In</Link> </p>
-                        </div>
-
-                        <div className='w-full flex justify-center items-center mb-3'>
-                            <div className='w-[45%] bg-slate-700 h-[1px]'></div>
-                            <div className='w-[10%] flex justify-center items-center'>
-                                <span className='pb-1'>Or</span>
-                            </div>
-                            <div className='w-[45%] bg-slate-700 h-[1px] '></div>
-                        </div>
-
-                        <div className='flex justify-center items-center gap-3'>
-                            <div className='w-[135px] h-[35px] flex rounded-md bg-orange-700 shadow-lg hover:shadow-orange-700/50 justify-center cursor-pointer items-center overflow-hidden'>
-                                <span><FaGoogle /></span>
-                            </div>
-
-                            <div className='w-[135px] h-[35px] flex rounded-md bg-blue-700 shadow-lg hover:shadow-blue-700/50 justify-center cursor-pointer items-center overflow-hidden'>
-                                <span><FaFacebook /></span>
-                            </div>
-
-                        </div>
-
-
-                    </form>
-
+                <div className='text-center mt-4'>
+                    <p className='text-gray-600'>Already have an account? <Link to="/login" className='text-indigo-600 font-medium'>Sign In</Link></p>
                 </div>
             </div>
-
         </div>
     );
 };
