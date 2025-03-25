@@ -3,10 +3,9 @@ import { FaImages } from "react-icons/fa6";
 import { FadeLoader } from 'react-spinners';
 import { FaRegEdit } from "react-icons/fa";
 import { useDispatch, useSelector } from 'react-redux';
-import { profile_image_upload, messageClear, profile_info_add } from '../../store/Reducers/authReducer'
+import { profile_image_upload, messageClear, profile_info_add, profile_info_update } from '../../store/Reducers/authReducer'
 import toast from 'react-hot-toast';
 import { PropagateLoader } from 'react-spinners';
-import { overrideStyle } from '../../utils/utils';
 import { create_stripe_connect_account } from '../../store/Reducers/sellerReducer';
 
 const Profile = () => {
@@ -38,6 +37,18 @@ const Profile = () => {
         }
 
     }
+    useEffect(() => {
+        if (userInfo?.shopInfo) {
+            setState(userInfo.shopInfo); // Cập nhật state với dữ liệu từ DB
+        }
+    }, [userInfo]);
+
+    useEffect(() => {
+        if (successMessage) {
+            toast.success(successMessage);
+            setEditMode(false); // Ẩn form sau khi update thành công
+        }
+    }, [successMessage]);
 
     const inputHandle = (e) => {
         setState({
@@ -45,170 +56,181 @@ const Profile = () => {
             [e.target.name]: e.target.value
         })
     }
+    useEffect(() => {
+        if (userInfo?.shopInfo) {
+            setState({
+                division: userInfo.shopInfo.division || '',
+                district: userInfo.shopInfo.district || '',
+                shopName: userInfo.shopInfo.shopName || '',
+                sub_district: userInfo.shopInfo.sub_district || ''
+            });
+        }
+    }, [userInfo]);
 
-    const add = (e) => {
-        e.preventDefault()
-        dispatch(profile_info_add(state))
-    }
+    const [editMode, setEditMode] = useState(false);
 
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        if (userInfo?.shopInfo) {
+            dispatch(profile_info_update(state)); // Nếu đã có shopInfo → Update
+        } else {
+            dispatch(profile_info_add(state)); // Nếu chưa có → Add
+        }
+    };
     return (
-        <div className='px-2 lg:px-7 py-5'>
-            <div className='w-full flex flex-wrap'>
-                <div className='w-full md:w-6/12'>
-                    <div className='w-full p-4 bg-[#6a5fdf] rounded-md text-[#d0d2d6]'>
-                        <div className='flex justify-center items-center py-3'>
-                            {
-                                userInfo?.image ? <label htmlFor="img" className='h-[150px] w-[200px] relative p-3 cursor-pointer overflow-hidden'>
-                                    <img src={userInfo.image} alt="" />
-                                    {
-                                        loader && <div className='bg-slate-600 absolute left-0 top-0 w-full h-full opacity-70 flex justify-center items-center z-20'>
-                                            <span>
-                                                <FadeLoader />
-                                            </span>
-
+        <div className="px-4 lg:px-7 py-5  min-h-screen flex justify-center">
+            <div className="w-full max-w flex flex-wrap">
+                {/* Left Section */}
+                <div className="w-full md:w-6/12">
+                    <div className="w-full p-5 bg-white rounded-md shadow-md">
+                        <div className="flex justify-center py-3">
+                            {userInfo?.image ? (
+                                <label htmlFor="img" className="relative cursor-pointer">
+                                    <img
+                                        src={userInfo.image}
+                                        className="w-40 h-40 rounded-full border border-gray-300 shadow-sm object-cover"
+                                        alt="Profile"
+                                    />
+                                    {loader && (
+                                        <div className="absolute inset-0 flex items-center justify-center bg-gray-600 opacity-50 rounded-full">
+                                            <FadeLoader />
                                         </div>
-                                    }
-
-
-                                </label> : <label className='flex justify-center items-center flex-col h-[150px] w-[200px] cursor-pointer border border-dashed hover:border-red-500 border-[#d0d2d6] relative' htmlFor="img">
-                                    <span><FaImages /> </span>
-                                    <span>Select Image</span>
-                                    {
-                                        loader && <div className='bg-slate-600 absolute left-0 top-0 w-full h-full opacity-70 flex justify-center items-center z-20'>
-                                            <span>
-                                                <FadeLoader />
-                                            </span>
-
-                                        </div>
-                                    }
-
+                                    )}
                                 </label>
-                            }
-                            <input onChange={add_image} type="file" className='hidden' id='img' />
+                            ) : (
+                                <label
+                                    className="flex justify-center items-center flex-col w-40 h-40 cursor-pointer border border-dashed border-gray-400 hover:border-red-500 rounded-md"
+                                    htmlFor="img"
+                                >
+                                    <FaImages className="text-gray-500 text-2xl" />
+                                    <span className="text-gray-600">Select Image</span>
+                                </label>
+                            )}
+                            <input onChange={add_image} type="file" className="hidden" id="img" />
                         </div>
 
-                        <div className='px-0 md:px-5 py-2'>
-                            <div className='flex justify-between text-sm flex-col gap-2 p-4 bg-slate-800 rounded-md relative'>
-                                <span className='p-[6px] bg-yellow-500 rounded hover:shadow-lg hover:shadow-yellow-500/50 absolute right-2 top-2 cursor-pointer'><FaRegEdit /> </span>
-                                <div className='flex gap-2'>
-                                    <span>Name : </span>
-                                    <span>{userInfo.name}</span>
-                                </div>
-                                <div className='flex gap-2'>
-                                    <span>Email : </span>
-                                    <span>{userInfo.email}</span>
-                                </div>
-                                <div className='flex gap-2'>
-                                    <span>Role : </span>
-                                    <span>{userInfo.role}</span>
-                                </div>
-                                <div className='flex gap-2'>
-                                    <span>Status : </span>
-                                    <span>{userInfo.status}</span>
-                                </div>
-                                <div className='flex gap-2'>
-                                    <span>Payment Account : </span>
-                                    <p>
-                                        {
-                                            userInfo.payment === 'active' ? <span className='bg-red-500 text-white text-xs cursor-pointer font-normal ml-2 px-2 py-0.5 rounded'>{userInfo.payment}</span> : <span onClick={() => dispatch(create_stripe_connect_account())} className='bg-blue-500 text-white text-xs cursor-pointer font-normal ml-2 px-2 py-0.5 rounded'>Click Active</span>
-                                        }
-                                    </p>
-                                </div>
+                        {/* User Info */}
+                        <div className="p-4 bg-gray-50 rounded-md shadow-sm relative">
+                            {/* <span
+                                onClick={() => setEditMode(true)}
+                                className="p-2 bg-yellow-500 text-white rounded-full hover:shadow-md absolute right-3 top-3 cursor-pointer"
+                            >
+                                <FaRegEdit />
+                            </span> */}
+                            <div className="flex gap-2 text-gray-700">
+                                <span className="font-semibold">Name:</span>
+                                <span>{userInfo.name}</span>
+                            </div>
+                            <div className="flex gap-2 text-gray-700">
+                                <span className="font-semibold">Email:</span>
+                                <span>{userInfo.email}</span>
+                            </div>
+                            <div className="flex gap-2 text-gray-700">
+                                <span className="font-semibold">Role:</span>
+                                <span>{userInfo.role}</span>
+                            </div>
+                            <div className="flex gap-2 text-gray-700">
+                                <span className="font-semibold">Status:</span>
+                                <span>{userInfo.status}</span>
+                            </div>
+                            <div className="flex gap-2 text-gray-700">
+                                <span className="font-semibold">Payment Account:</span>
+                                <span
+                                    className={`px-2 py-1 text-white text-xs rounded ${userInfo.payment === "active" ? "bg-green-500" : "bg-blue-500 cursor-pointer"
+                                        }`}
+                                    onClick={() => {
+                                        if (userInfo.payment !== "active") dispatch(create_stripe_connect_account());
+                                    }}
+                                >
+                                    {userInfo.payment === "active" ? userInfo.payment : "Activate"}
+                                </span>
                             </div>
                         </div>
 
-                        <div className='px-0 md:px-5 py-2'>
-                            {
-                                !userInfo?.shopInfo ? <form onSubmit={add}>
-                                    <div className='flex flex-col w-full gap-1 mb-2'>
-                                        <label htmlFor="Shop">Shop Name</label>
-                                        <input value={state.shopName} onChange={inputHandle} className='px-4 py-2 focus:border-indigo-200 outline-none bg-[#6a5fdf] border border-slate-700 rounded-md text-[#d0d2d6]' type="text" name='shopName' id='Shop' placeholder='Shop Name' />
-                                    </div>
-
-                                    <div className='flex flex-col w-full gap-1 mb-2'>
-                                        <label htmlFor="division">Division Name</label>
-                                        <input value={state.division} onChange={inputHandle} className='px-4 py-2 focus:border-indigo-200 outline-none bg-[#6a5fdf] border border-slate-700 rounded-md text-[#d0d2d6]' type="text" name='division' id='division' placeholder='division Name' />
-                                    </div>
-
-                                    <div className='flex flex-col w-full gap-1 mb-2'>
-                                        <label htmlFor="district">District Name</label>
-                                        <input value={state.district} onChange={inputHandle} className='px-4 py-2 focus:border-indigo-200 outline-none bg-[#6a5fdf] border border-slate-700 rounded-md text-[#d0d2d6]' type="text" name='district' id='district' placeholder='District Name' />
-                                    </div>
-
-                                    <div className='flex flex-col w-full gap-1 mb-2'>
-                                        <label htmlFor="sub">Sub District Name</label>
-                                        <input value={state.sub_district} onChange={inputHandle} className='px-4 py-2 focus:border-indigo-200 outline-none bg-[#6a5fdf] border border-slate-700 rounded-md text-[#d0d2d6]' type="text" name='sub_district' id='sub' placeholder='Sub District Name' />
-                                    </div>
-
-                                    <button disabled={loader ? true : false} className='bg-red-500 w-[200px] hover:shadow-red-300/50 hover:shadow-lg text-white rounded-md px-7 py-2 mb-3'>
-                                        {
-                                            loader ? <PropagateLoader color='#fff' cssOverride={overrideStyle} /> : 'Save Changes'
-                                        }
-                                    </button>
-
-                                </form> : <div className='flex justify-between text-sm flex-col gap-2 p-4 bg-slate-800 rounded-md relative'>
-                                    <span className='p-[6px] bg-yellow-500 rounded hover:shadow-lg hover:shadow-yellow-500/50 absolute right-2 top-2 cursor-pointer'><FaRegEdit /> </span>
-                                    <div className='flex gap-2'>
-                                        <span>Shop Name : </span>
-                                        <span>{userInfo.shopInfo?.shopName}</span>
-                                    </div>
-                                    <div className='flex gap-2'>
-                                        <span>Divission : </span>
-                                        <span>{userInfo.shopInfo?.division}</span>
-                                    </div>
-                                    <div className='flex gap-2'>
-                                        <span>District : </span>
-                                        <span>{userInfo.shopInfo?.district}</span>
-                                    </div>
-                                    <div className='flex gap-2'>
-                                        <span>Sub District : </span>
-                                        <span>{userInfo.shopInfo?.sub_district}</span>
-                                    </div>
-
-                                </div>
-                            }
+                        <div className="p-4 bg-gray-50 rounded-md shadow-sm relative mt-5">
+                            <span
+                                onClick={() => setEditMode(true)}
+                                className="p-2 bg-yellow-500 text-white rounded-full hover:shadow-md absolute right-3 top-3 cursor-pointer"
+                            >
+                                <FaRegEdit />
+                            </span>
+                            <div className="flex gap-2 text-gray-700">
+                                <span className="font-semibold">Shop Name:</span>
+                                <span>{userInfo?.shopInfo?.shopName || 'N/A'}</span>
+                            </div>
+                            <div className="flex gap-2 text-gray-700">
+                                <span className="font-semibold">Division:</span>
+                                <span>{userInfo?.shopInfo?.division || 'N/A'}</span>
+                            </div>
+                            <div className="flex gap-2 text-gray-700">
+                                <span className="font-semibold">District:</span>
+                                <span>{userInfo?.shopInfo?.district || 'N/A'}</span>
+                            </div>
+                            <div className="flex gap-2 text-gray-700">
+                                <span className="font-semibold">Sub District:</span>
+                                <span>{userInfo?.shopInfo?.sub_district || 'N/A'}</span>
+                            </div>
                         </div>
-                    </div>
-                </div>
 
-                <div className='w-full md:w-6/12'>
-                    <div className='w-full pl-0 md:pl-7 mt-6 md:mt-0'>
-                        <div className='bg-[#6a5fdf] rounded-md text-[#d0d2d6] p-4'>
-                            <h1 className='text-[#d0d2d6] text-lg mb-3 font-semibold'>Change Password</h1>
-                            <form>
-                                <div className='flex flex-col w-full gap-1 mb-2'>
-                                    <label htmlFor="email">Email</label>
-                                    <input className='px-4 py-2 focus:border-indigo-200 outline-none bg-[#6a5fdf] border border-slate-700 rounded-md text-[#d0d2d6]' type="email" name='email' id='email' placeholder='email' />
+                        {/* Edit Form */}
+                        {editMode && (
+                            <form onSubmit={handleSubmit} className="mt-5">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    {["shopName", "division", "district", "sub_district"].map((field) => (
+                                        <div key={field} className="flex flex-col">
+                                            <label className="text-gray-700 font-medium capitalize">{field.replace("_", " ")}</label>
+                                            <input
+                                                type="text"
+                                                name={field}
+                                                value={state[field]}
+                                                onChange={inputHandle}
+                                                className="px-4 py-2 border border-gray-300 rounded-md focus:ring focus:ring-indigo-300 bg-white text-gray-700"
+                                            />
+                                        </div>
+                                    ))}
                                 </div>
-
-                                <div className='flex flex-col w-full gap-1 mb-2'>
-                                    <label htmlFor="o_password">Old Password</label>
-                                    <input className='px-4 py-2 focus:border-indigo-200 outline-none bg-[#6a5fdf] border border-slate-700 rounded-md text-[#d0d2d6]' type="password" name='old_password' id='o_password' placeholder='Old Password' />
-                                </div>
-
-                                <div className='flex flex-col w-full gap-1 mb-2'>
-                                    <label htmlFor="n_password">New Password</label>
-                                    <input className='px-4 py-2 focus:border-indigo-200 outline-none bg-[#6a5fdf] border border-slate-700 rounded-md text-[#d0d2d6]' type="password" name='new_password' id='n_password' placeholder='New Password' />
-                                </div>
-
-
-                                <button className='bg-red-500  hover:shadow-red-500/40 hover:shadow-md text-white rounded-md px-7 py-2 my-2'>Save Changes</button>
-
+                                <button
+                                    disabled={loader}
+                                    className="mt-4 w-full md:w-48 bg-indigo-500 hover:bg-indigo-600 text-white rounded-md px-7 py-2 transition duration-200 shadow-md"
+                                >
+                                    {loader ? <PropagateLoader color="#fff" /> : "Save Changes"}
+                                </button>
                             </form>
-
-                        </div>
-
+                        )}
                     </div>
-
                 </div>
 
-
-
-
+                {/* Right Section - Change Password */}
+                <div className="w-full md:w-6/12 mt-6 md:mt-0">
+                    <div className="w-full pl-0 md:pl-7">
+                        <div className="bg-white rounded-md shadow-md p-5">
+                            <h1 className="text-gray-800 text-lg mb-3 font-semibold">Change Password</h1>
+                            <form>
+                                {["email", "old_password", "new_password"].map((field, index) => (
+                                    <div key={index} className="flex flex-col w-full gap-1 mb-2">
+                                        <label htmlFor={field} className="text-gray-700 capitalize">
+                                            {field.replace("_", " ")}
+                                        </label>
+                                        <input
+                                            className="px-4 py-2 border border-gray-300 rounded-md focus:ring focus:ring-indigo-300 bg-white text-gray-700"
+                                            type={field.includes("password") ? "password" : "email"}
+                                            name={field}
+                                            id={field}
+                                            placeholder={field.replace("_", " ")}
+                                        />
+                                    </div>
+                                ))}
+                                <button className="bg-red-500 hover:shadow-red-500/40 hover:shadow-md text-white rounded-md px-7 py-2 my-2">
+                                    Save Changes
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
             </div>
-
         </div>
     );
+
 };
 
 export default Profile;
