@@ -1,115 +1,109 @@
-import React, { useEffect, useState } from 'react'; 
-import { Link } from 'react-router-dom';
-import Pagination from '../Pagination';
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import Pagination from "../Pagination";
 import { FaEye } from "react-icons/fa";
-import { useDispatch, useSelector } from 'react-redux';
-import { get_active_sellers } from '../../store/Reducers/sellerReducer';
+import { useDispatch, useSelector } from "react-redux";
+import { get_active_sellers } from "../../store/Reducers/sellerReducer";
 
 const Sellers = () => {
+  const dispatch = useDispatch();
 
-    const dispatch = useDispatch()
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchValue, setSearchValue] = useState("");
+  const [parPage, setParPage] = useState(5);
 
-    const [currentPage, setCurrentPage] = useState(1)
-    const [searchValue, setSearchValue] = useState('')
-    const [parPage, setParPage] = useState(5)
-    const [show, setShow] =  useState(false)
+  const { sellers, totalSeller } = useSelector((state) => state.seller);
 
-    const {sellers,totalSeller } = useSelector(state => state.seller)
+  useEffect(() => {
+    const obj = {
+      parPage: parseInt(parPage),
+      page: parseInt(currentPage),
+      searchValue,
+    };
+    dispatch(get_active_sellers(obj));
+  }, [searchValue, currentPage, parPage]);
 
-
-    useEffect(() => {
-        const obj = {
-            parPage: parseInt(parPage),
-            page: parseInt(currentPage),
-            searchValue
-        }
-        dispatch(get_active_sellers(obj))
-    },[searchValue,currentPage,parPage])
- 
-    return (
-        <div className='px-2 lg:px-7 pt-5'>
-             <h1 className='text-[20px] font-bold mb-3'>Seller </h1>
-             <div className='w-full p-4 bg-[#6a5fdf] rounded-md'>
-            
-             <div className='flex justify-between items-center'>
-                    <select onChange={(e) => setParPage(parseInt(e.target.value))} className='px-4 py-2 focus:border-indigo-500 outline-none bg-[#6a5fdf] border border-slate-700 rounded-md text-[#d0d2d6]'>
-                        <option value="5">5</option>
-                        <option value="10">10</option>
-                        <option value="20">20</option> 
-                    </select>
-                    <input  onChange={e => setSearchValue(e.target.value)} value={searchValue} className='px-4 py-2 focus:border-indigo-500 outline-none bg-[#6a5fdf] border border-slate-700 rounded-md text-[#d0d2d6]' type="text" placeholder='search' /> 
-                </div>
-
-                <div className='relative overflow-x-auto'>
-    <table className='w-full text-sm text-left text-[#d0d2d6]'>
-        <thead className='text-sm text-[#d0d2d6] uppercase border-b border-slate-700'>
-        <tr>
-            <th scope='col' className='py-3 px-4'>No</th>
-            <th scope='col' className='py-3 px-4'>Image</th>
-            <th scope='col' className='py-3 px-4'>Name</th>
-            <th scope='col' className='py-3 px-4'>Shop Name</th> 
-            <th scope='col' className='py-3 px-4'>Payment Status</th> 
-            <th scope='col' className='py-3 px-4'>Email</th> 
-            <th scope='col' className='py-3 px-4'>Status</th> 
-            <th scope='col' className='py-3 px-4'>District</th> 
-            <th scope='col' className='py-3 px-4'>Action</th> 
-        </tr>
-        </thead>
-
-        <tbody>
-            {
-                sellers.map((d, i) => <tr key={i}>
-                <td scope='row' className='py-1 px-4 font-medium whitespace-nowrap'>{i+1}</td>
-                <td scope='row' className='py-1 px-4 font-medium whitespace-nowrap'>
-                    <img className='w-[45px] h-[45px]' src={ d.image } alt="" />
-                </td>
-                <td scope='row' className='py-1 px-4 font-medium whitespace-nowrap'>{ d.name } </td>
-                <td scope='row' className='py-1 px-4 font-medium whitespace-nowrap'>{ d.shopInfo?.shopName }</td>
-                <td scope='row' className='py-1 px-4 font-medium whitespace-nowrap'>
-                    <span>{ d.payment }</span> </td>
-                <td scope='row' className='py-1 px-4 font-medium whitespace-nowrap'>{ d.email } </td>
-
-                <td scope='row' className='py-1 px-4 font-medium whitespace-nowrap'>{ d.status } </td>
-
-                <td scope='row' className='py-1 px-4 font-medium whitespace-nowrap'>{ d.shopInfo?.district } </td>
-                 
-                <td scope='row' className='py-1 px-4 font-medium whitespace-nowrap'>
-                    <div className='flex justify-start items-center gap-4'>
-                    <Link to={`/admin/dashboard/seller/details/${d._id}`} className='p-[6px] bg-green-500 rounded hover:shadow-lg hover:shadow-green-500/50'> <FaEye /> </Link> 
-                    
-                    </div>
-                    
-                    </td>
-            </tr> )
-            }
-
-            
-        </tbody> 
-    </table> 
-    </div>  
-
-   {
-     totalSeller <= parPage ? <div className='w-full flex justify-end mt-4 bottom-4 right-4'>
-     <Pagination 
-         pageNumber = {currentPage}
-         setPageNumber = {setCurrentPage}
-         totalItem = {totalSeller}
-         parPage = {parPage}
-         showItem = {4}
-     />
-     </div> : ""
-   }
-    
-
-
-
-
-
-
-             </div>
-            
+  return (
+    <div className="px-4 py-6">
+      <div className="w-full p-5 bg-white rounded-lg shadow-md">
+      <h1 className="text-2xl font-bold mb-4">Sellers</h1>
+        {/* Filter & Search */}
+        <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-4">
+          <select
+            onChange={(e) => setParPage(parseInt(e.target.value))}
+            className="px-4 py-2 border border-gray-300 rounded-md bg-white text-gray-700 focus:ring focus:ring-indigo-300"
+          >
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="20">20</option>
+          </select>
+          <input
+            onChange={(e) => setSearchValue(e.target.value)}
+            value={searchValue}
+            className="px-4 py-2 border border-gray-300 rounded-md bg-white text-gray-700 focus:ring focus:ring-indigo-300 w-full md:w-64"
+            type="text"
+            placeholder="Search sellers..."
+          />
         </div>
-    );
+
+        {/* Table */}
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm text-left text-gray-700">
+            <thead className="text-sm uppercase border-b border-gray-300 bg-gray-100">
+              <tr>
+                <th className="py-3 px-4">No</th>
+                <th className="py-3 px-4">Image</th>
+                <th className="py-3 px-4">Name</th>
+                <th className="py-3 px-4">Shop Name</th>
+                <th className="py-3 px-4">Payment Status</th>
+                <th className="py-3 px-4">Email</th>
+                <th className="py-3 px-4">Status</th>
+                <th className="py-3 px-4">District</th>
+                <th className="py-3 px-4">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {sellers.map((d, i) => (
+                <tr key={i} className="border-b border-gray-200">
+                  <td className="py-2 px-4">{i + 1}</td>
+                  <td className="py-2 px-4">
+                    <img className="w-12 h-12 rounded-full" src={d.image} alt="" />
+                  </td>
+                  <td className="py-2 px-4">{d.name}</td>
+                  <td className="py-2 px-4">{d.shopInfo?.shopName}</td>
+                  <td className="py-2 px-4">{d.payment}</td>
+                  <td className="py-2 px-4">{d.email}</td>
+                  <td className="py-2 px-4">{d.status}</td>
+                  <td className="py-2 px-4">{d.shopInfo?.district}</td>
+                  <td className="py-2 px-4">
+                    <Link
+                      to={`/admin/dashboard/seller/details/${d._id}`}
+                      className="p-2 bg-green-500 text-white rounded hover:shadow-md flex justify-center items-center w-10 h-10"
+                    >
+                      <FaEye />
+                    </Link>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Pagination */}
+        {totalSeller > parPage && (
+          <div className="flex justify-end mt-4">
+            <Pagination
+              pageNumber={currentPage}
+              setPageNumber={setCurrentPage}
+              totalItem={totalSeller}
+              parPage={parPage}
+              showItem={4}
+            />
+          </div>
+        )}
+      </div>
+    </div>
+  );
 };
 
 export default Sellers;
