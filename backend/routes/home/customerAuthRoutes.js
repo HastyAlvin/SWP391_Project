@@ -1,9 +1,17 @@
-const customerAuthController = require('../../controllers/home/customerAuthController')
-const router = require('express').Router()
+const express = require('express');
+const customerAuthController = require('../../controllers/home/customerAuthController');
+const { authMiddleware, verifyCustomer } = require('../../middlewares/authMiddleware');
 
-router.post('/customer/customer-register',customerAuthController.customer_register)
-router.post('/customer/customer-login',customerAuthController.customer_login)
+const router = express.Router();
 
-router.get('/customer/logout',customerAuthController.customer_logout)
+// Đăng ký & Đăng nhập
+router.post('/customer/customer-register', customerAuthController.customer_register);
+router.post('/customer/customer-login', customerAuthController.customer_login);
 
-module.exports = router 
+// Đăng xuất
+router.get('/customer/logout', customerAuthController.customer_logout);
+
+// Đổi mật khẩu (chỉ Customer được phép)
+router.put('/customer/change-password', authMiddleware, verifyCustomer, customerAuthController.change_password);
+
+module.exports = router;
