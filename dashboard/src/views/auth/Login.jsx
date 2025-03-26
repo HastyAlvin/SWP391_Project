@@ -9,7 +9,7 @@ import { seller_login, messageClear } from '../../store/Reducers/authReducer';
 const Login = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const { loader, errorMessage, successMessage } = useSelector(state => state.auth);
+    const { loader, errorMessage, successMessage, role } = useSelector(state => state.auth);
 
     const [state, setState] = useState({ 
         email: "",
@@ -45,7 +45,11 @@ const Login = () => {
         if (successMessage) {
             toast.success(successMessage);
             dispatch(messageClear()); 
-            navigate('/');
+            if (role === 'admin') {
+                navigate('/admin/dashboard');
+            } else {
+                navigate('/seller/dashboard');
+            }
         }
         if (errorMessage) {
             toast.error(errorMessage);
