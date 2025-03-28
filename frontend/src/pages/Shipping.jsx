@@ -8,6 +8,7 @@ import { place_order } from '../store/reducers/orderReducer';
 
 const Shipping = () => {
 
+    const [errors, setErrors] = useState({});
     const { state: { products, price, shipping_fee, items } } = useLocation()
     const dispatch = useDispatch()
     const navigate = useNavigate()
@@ -32,13 +33,25 @@ const Shipping = () => {
     }
 
     const save = (e) => {
-        e.preventDefault()
+        e.preventDefault();
         const { name, address, phone, post, province, city, area } = state;
-        if (name && address && phone && post && province && city && area) {
-            setRes(true)
+        let newErrors = {};
+    
+        if (!name) newErrors.name = "Name is required";
+        if (!address) newErrors.address = "Address is required";
+        if (!phone) newErrors.phone = "Phone is required";
+        if (!post) newErrors.post = "Post is required";
+        if (!province) newErrors.province = "Province is required";
+        if (!city) newErrors.city = "City is required";
+        if (!area) newErrors.area = "Area is required";
+    
+        setErrors(newErrors);
+    
+        if (Object.keys(newErrors).length === 0) {
+            setRes(true);
         }
-
-    }
+    };
+    
 
     const placeOrder = () => {
         dispatch(place_order({
@@ -86,54 +99,105 @@ const Shipping = () => {
                                     {
                                         !res && <>
                                             <form onSubmit={save}>
-                                                <div className='flex md:flex-col md:gap-2 w-full gap-5 text-slate-600'>
-                                                    <div className='flex flex-col gap-1 mb-2 w-full'>
-                                                        <label htmlFor="name"> Name </label>
-                                                        <input onChange={inputHandle} value={state.name} type="text" className='w-full px-3 py-2 border border-slate-200 outline-none focus:border-green-500 rounded-md' name="name" id="name" placeholder='Name' />
-                                                    </div>
+    <div className='flex md:flex-col md:gap-2 w-full gap-5 text-slate-600'>
+        <div className='flex flex-col gap-1 mb-2 w-full'>
+            <label htmlFor="name"> Name </label>
+            <input 
+                onChange={inputHandle} 
+                value={state.name} 
+                type="text" 
+                className={`w-full px-3 py-2 border ${errors.name ? 'border-red-500' : 'border-slate-200'} outline-none focus:border-green-500 rounded-md`} 
+                name="name" id="name" placeholder='Name' 
+            />
+            {errors.name && <span className="text-red-500 text-sm">{errors.name}</span>}
+        </div>
 
-                                                    <div className='flex flex-col gap-1 mb-2 w-full'>
-                                                        <label htmlFor="address"> Address </label>
-                                                        <input onChange={inputHandle} value={state.address} type="text" className='w-full px-3 py-2 border border-slate-200 outline-none focus:border-green-500 rounded-md' name="address" id="address" placeholder='Address' />
-                                                    </div>
-                                                </div>
+        <div className='flex flex-col gap-1 mb-2 w-full'>
+            <label htmlFor="address"> Address </label>
+            <input 
+                onChange={inputHandle} 
+                value={state.address} 
+                type="text" 
+                className={`w-full px-3 py-2 border ${errors.address ? 'border-red-500' : 'border-slate-200'} outline-none focus:border-green-500 rounded-md`} 
+                name="address" id="address" placeholder='Address' 
+            />
+            {errors.address && <span className="text-red-500 text-sm">{errors.address}</span>}
+        </div>
+    </div>
 
-                                                <div className='flex md:flex-col md:gap-2 w-full gap-5 text-slate-600'>
-                                                    <div className='flex flex-col gap-1 mb-2 w-full'>
-                                                        <label htmlFor="phone"> Phone </label>
-                                                        <input onChange={inputHandle} value={state.phone} type="text" className='w-full px-3 py-2 border border-slate-200 outline-none focus:border-green-500 rounded-md' name="phone" id="phone" placeholder='Phone' />
-                                                    </div>
+    <div className='flex md:flex-col md:gap-2 w-full gap-5 text-slate-600'>
+        <div className='flex flex-col gap-1 mb-2 w-full'>
+            <label htmlFor="phone"> Phone </label>
+            <input 
+                onChange={inputHandle} 
+                value={state.phone} 
+                type="text" 
+                className={`w-full px-3 py-2 border ${errors.phone ? 'border-red-500' : 'border-slate-200'} outline-none focus:border-green-500 rounded-md`} 
+                name="phone" id="phone" placeholder='Phone' 
+            />
+            {errors.phone && <span className="text-red-500 text-sm">{errors.phone}</span>}
+        </div>
 
-                                                    <div className='flex flex-col gap-1 mb-2 w-full'>
-                                                        <label htmlFor="post"> Post </label>
-                                                        <input onChange={inputHandle} value={state.post} type="text" className='w-full px-3 py-2 border border-slate-200 outline-none focus:border-green-500 rounded-md' name="post" id="post" placeholder='Post' />
-                                                    </div>
-                                                </div>
+        <div className='flex flex-col gap-1 mb-2 w-full'>
+            <label htmlFor="post"> Post </label>
+            <input 
+                onChange={inputHandle} 
+                value={state.post} 
+                type="text" 
+                className={`w-full px-3 py-2 border ${errors.post ? 'border-red-500' : 'border-slate-200'} outline-none focus:border-green-500 rounded-md`} 
+                name="post" id="post" placeholder='Post' 
+            />
+            {errors.post && <span className="text-red-500 text-sm">{errors.post}</span>}
+        </div>
+    </div>
 
-                                                <div className='flex md:flex-col md:gap-2 w-full gap-5 text-slate-600'>
-                                                    <div className='flex flex-col gap-1 mb-2 w-full'>
-                                                        <label htmlFor="province"> Province </label>
-                                                        <input onChange={inputHandle} value={state.province} type="text" className='w-full px-3 py-2 border border-slate-200 outline-none focus:border-green-500 rounded-md' name="province" id="province" placeholder='Province' />
-                                                    </div>
+    <div className='flex md:flex-col md:gap-2 w-full gap-5 text-slate-600'>
+        <div className='flex flex-col gap-1 mb-2 w-full'>
+            <label htmlFor="province"> Province </label>
+            <input 
+                onChange={inputHandle} 
+                value={state.province} 
+                type="text" 
+                className={`w-full px-3 py-2 border ${errors.province ? 'border-red-500' : 'border-slate-200'} outline-none focus:border-green-500 rounded-md`} 
+                name="province" id="province" placeholder='Province' 
+            />
+            {errors.province && <span className="text-red-500 text-sm">{errors.province}</span>}
+        </div>
 
-                                                    <div className='flex flex-col gap-1 mb-2 w-full'>
-                                                        <label htmlFor="city"> City </label>
-                                                        <input onChange={inputHandle} value={state.city} type="text" className='w-full px-3 py-2 border border-slate-200 outline-none focus:border-green-500 rounded-md' name="city" id="city" placeholder='City' />
-                                                    </div>
-                                                </div>
+        <div className='flex flex-col gap-1 mb-2 w-full'>
+            <label htmlFor="city"> City </label>
+            <input 
+                onChange={inputHandle} 
+                value={state.city} 
+                type="text" 
+                className={`w-full px-3 py-2 border ${errors.city ? 'border-red-500' : 'border-slate-200'} outline-none focus:border-green-500 rounded-md`} 
+                name="city" id="city" placeholder='City' 
+            />
+            {errors.city && <span className="text-red-500 text-sm">{errors.city}</span>}
+        </div>
+    </div>
 
+    <div className='flex md:flex-col md:gap-2 w-full gap-5 text-slate-600'>
+        <div className='flex flex-col gap-1 mb-2 w-full'>
+            <label htmlFor="area"> Area </label>
+            <input 
+                onChange={inputHandle} 
+                value={state.area} 
+                type="text" 
+                className={`w-full px-3 py-2 border ${errors.area ? 'border-red-500' : 'border-slate-200'} outline-none focus:border-green-500 rounded-md`} 
+                name="area" id="area" placeholder='Area' 
+            />
+            {errors.area && <span className="text-red-500 text-sm">{errors.area}</span>}
+        </div>
 
-                                                <div className='flex md:flex-col md:gap-2 w-full gap-5 text-slate-600'>
-                                                    <div className='flex flex-col gap-1 mb-2 w-full'>
-                                                        <label htmlFor="area"> Area </label>
-                                                        <input onChange={inputHandle} value={state.area} type="text" className='w-full px-3 py-2 border border-slate-200 outline-none focus:border-green-500 rounded-md' name="area" id="area" placeholder='Area' />
-                                                    </div>
+        <div className='flex flex-col gap-1 mt-7 mb-2 w-full'>
+            <button className='px-3 py-[6px] rounded-sm hover:shadow-green-500/50 hover:shadow-lg bg-green-500 text-white'>
+                Save Change 
+            </button>
+        </div>
+    </div>
+</form>
 
-                                                    <div className='flex flex-col gap-1 mt-7 mb-2 w-full'>
-                                                        <button className='px-3 py-[6px] rounded-sm hover:shadow-green-500/50 hover:shadow-lg bg-green-500 text-white'>Save Change </button>
-                                                    </div>
-                                                </div>
-                                            </form>
 
 
                                         </>
