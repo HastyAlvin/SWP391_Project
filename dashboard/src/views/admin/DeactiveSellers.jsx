@@ -1,27 +1,52 @@
-import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import Pagination from '../Pagination';
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import Pagination from "../Pagination";
 import { FaEye } from "react-icons/fa";
-import { useDispatch, useSelector } from 'react-redux';
-import { get_deactive_sellers } from '../../store/Reducers/sellerReducer';
+import { useDispatch, useSelector } from "react-redux";
+import { get_deactive_sellers } from "../../store/Reducers/sellerReducer";
 
 const DeactiveSellers = () => {
     const dispatch = useDispatch();
-    const [currentPage, setCurrentPage] = useState(1);
-    const [searchValue, setSearchValue] = useState('');
-    const [parPage, setParPage] = useState(5);
 
-    const { sellers } = useSelector(state => state.seller);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [searchValue, setSearchValue] = useState("");
+    const [parPage, setParPage] = useState(5);
+    const [sortOrder, setSortOrder] = useState("asc");
+    const [filteredSellers, setFilteredSellers] = useState([]);
+
+    const { sellers, totalSeller } = useSelector((state) => state.seller);
 
     useEffect(() => {
-        dispatch(get_deactive_sellers({ parPage, page: currentPage, searchValue }));
+        const obj = {
+            parPage: parseInt(parPage),
+            page: parseInt(currentPage),
+            searchValue,
+        };
+        dispatch(get_deactive_sellers(obj));
     }, [searchValue, currentPage, parPage]);
+
+    useEffect(() => {
+        let filtered = [...sellers];
+        if (searchValue) {
+            filtered = filtered.filter(seller =>
+                seller.name.toLowerCase().includes(searchValue.toLowerCase())
+            );
+        }
+        setFilteredSellers(filtered);
+    }, [sellers, searchValue]);
+
+    const handleSort = () => {
+        const sortedSellers = [...filteredSellers].sort((a, b) => {
+            return sortOrder === "asc" ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name);
+        });
+        setFilteredSellers(sortedSellers);
+        setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    };
 
     return (
         <div className="px-4 py-6">
             <div className="w-full p-5 bg-white rounded-lg shadow-md">
                 <h1 className="text-2xl font-bold mb-4">Deactive Sellers</h1>
-
                 {/* Filter & Search */}
                 <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-4">
                     <select
@@ -48,7 +73,10 @@ const DeactiveSellers = () => {
                             <tr>
                                 <th className="py-3 px-4">No</th>
                                 <th className="py-3 px-4">Image</th>
-                                <th className="py-3 px-4">Name</th>
+
+                                <th className="py-3 px-4 cursor-pointer" onClick={handleSort}>
+                                    Name {sortOrder === "asc" ? "▲" : "▼"}
+                                </th>
                                 <th className="py-3 px-4">Shop Name</th>
                                 <th className="py-3 px-4">Payment Status</th>
                                 <th className="py-3 px-4">Email</th>
@@ -58,10 +86,12 @@ const DeactiveSellers = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {sellers.map((seller, i) => (
+                            {filteredSellers.map((seller, i) => (
                                 <tr key={i} className="border-b border-gray-200">
-                                    <td className="py-2 px-4">{i + 1}</td>
-                                    <td className="py-2 px-4"><img className="w-12 h-12 rounded-full" src={seller.image} alt="Seller" /></td>
+                                    <td className="py-2 px-4">{i + 1 + (currentPage - 1) * parPage}</td>
+                                    <td className="py-2 px-4">
+                                        <img className="w-12 h-12 rounded-full" src={seller.image} alt="" />
+                                    </td>
                                     <td className="py-2 px-4">{seller.name}</td>
                                     <td className="py-2 px-4">{seller.shopInfo?.shopName}</td>
                                     <td className="py-2 px-4">{seller.payment}</td>
@@ -83,15 +113,17 @@ const DeactiveSellers = () => {
                 </div>
 
                 {/* Pagination */}
-                <div className="flex justify-end mt-4">
-                    <Pagination
-                        pageNumber={currentPage}
-                        setPageNumber={setCurrentPage}
-                        totalItem={50}
-                        parPage={parPage}
-                        showItem={4}
-                    />
-                </div>
+                {totalSeller > parPage && (
+                    <div className="flex justify-end mt-4">
+                        <Pagination
+                            pageNumber={currentPage}
+                            setPageNumber={setCurrentPage}
+                            totalItem={totalSeller}
+                            parPage={parPage}
+                            showItem={4}
+                        />
+                    </div>
+                )}
             </div>
         </div>
     );

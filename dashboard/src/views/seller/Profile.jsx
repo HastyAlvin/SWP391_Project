@@ -15,35 +15,35 @@ const Profile = () => {
         district: '',
         shopName: '',
         sub_district: ''
-    })
+    });
 
-    const dispatch = useDispatch()
+    const dispatch = useDispatch();
     const { userInfo, loader, successMessage, errorMessage } = useSelector(state => state.auth);
     const [passwordData, setPasswordData] = useState({
         oldPassword: '',
         newPassword: ''
     });
-    
+    const [passwordError, setPasswordError] = useState({ oldPassword: '', newPassword: '' });
 
     const add_image = (e) => {
         if (e.target.files.length > 0) {
-            const formData = new FormData()
-            formData.append('image', e.target.files[0])
-            dispatch(profile_image_upload(formData))
+            const formData = new FormData();
+            formData.append('image', e.target.files[0]);
+            dispatch(profile_image_upload(formData));
         }
+    };
 
-    }
     useEffect(() => {
         if (userInfo?.shopInfo) {
-            setState(userInfo.shopInfo); // Cập nhật state với dữ liệu từ DB
+            setState(userInfo.shopInfo);
         }
     }, [userInfo]);
 
     useEffect(() => {
         if (successMessage) {
             toast.success(successMessage);
-            dispatch(messageClear()); // Đảm bảo gọi dispatch để xóa message
-            setPasswordData({ oldPassword: '', newPassword: '' }); // Reset input sau khi đổi mật khẩu thành công
+            dispatch(messageClear());
+            setPasswordData({ oldPassword: '', newPassword: '' });
         }
         if (errorMessage) {
             toast.error(errorMessage);
@@ -51,55 +51,60 @@ const Profile = () => {
         }
     }, [successMessage, errorMessage, dispatch]);
 
-    
-
     const inputHandle = (e) => {
         setState({
             ...state,
             [e.target.name]: e.target.value
-        })
-    }
-    useEffect(() => {
-        if (userInfo?.shopInfo) {
-            setState({
-                division: userInfo.shopInfo.division || '',
-                district: userInfo.shopInfo.district || '',
-                shopName: userInfo.shopInfo.shopName || '',
-                sub_district: userInfo.shopInfo.sub_district || ''
-            });
-        }
-    }, [userInfo]);
+        });
+    };
 
     const [editMode, setEditMode] = useState(false);
 
     const handleSubmit = (e) => {
         e.preventDefault();
         if (userInfo?.shopInfo) {
-            dispatch(profile_info_update(state)); // Nếu đã có shopInfo → Update
+            dispatch(profile_info_update(state));
         } else {
-            dispatch(profile_info_add(state)); // Nếu chưa có → Add
+            dispatch(profile_info_add(state));
         }
     };
+
     const handlePasswordChange = (e) => {
         setPasswordData({
             ...passwordData,
             [e.target.name]: e.target.value
         });
+        setPasswordError({ ...passwordError, [e.target.name]: '' });
     };
+
+    const validatePassword = () => {
+        let errors = {};
+        if (passwordData.oldPassword.length < 6) {
+            errors.oldPassword = "Mật khẩu cũ phải có ít nhất 6 ký tự.";
+        }
+        if (passwordData.newPassword.length < 6) {
+            errors.newPassword = "Mật khẩu mới phải có ít nhất 6 ký tự.";
+        }
+        if (passwordData.oldPassword === passwordData.newPassword) {
+            errors.newPassword = "Mật khẩu mới không được trùng với mật khẩu cũ.";
+        }
+        setPasswordError(errors);
+        return Object.keys(errors).length === 0;
+    };
+
     const submitPasswordChange = async (e) => {
         e.preventDefault();
+        if (!validatePassword()) return;
         dispatch(change_password(passwordData)).then((res) => {
             if (res.payload?.message) {
                 toast.success(res.payload.message);
-                setPasswordData({ oldPassword: '', newPassword: '' }); // Reset input
+                setPasswordData({ oldPassword: '', newPassword: '' });
             }
             if (res.payload?.error) {
                 toast.error(res.payload.error);
             }
         });
     };
-    
-
     return (
         <div className="px-4 lg:px-7 py-5  min-h-screen flex justify-center">
             <div className="w-full max-w flex flex-wrap">
@@ -229,14 +234,16 @@ const Profile = () => {
                         <div className="bg-white rounded-md shadow-md p-5">
                             <h1 className="text-gray-800 text-lg mb-3 font-semibold">Change Password</h1>
                             <form onSubmit={submitPasswordChange}>
-                                <div className="flex flex-col w-full gap-1 mb-2  ">
+                                <div className="flex flex-col w-full gap-1 mb-2">
                                     <label htmlFor="oldPassword" className="text-gray-700">Old Password</label>
                                     <input className='border-2 p-3' type="password" name="oldPassword" id="oldPassword" value={passwordData.oldPassword} onChange={handlePasswordChange} />
-                                    </div>
-                                <div className="flex flex-col w-full gap-1 mb-2 ">
+                                    {passwordError.oldPassword && <p className="text-red-500 text-sm">{passwordError.oldPassword}</p>}
+                                </div>
+                                <div className="flex flex-col w-full gap-1 mb-2">
                                     <label htmlFor="newPassword" className="text-gray-700">New Password</label>
                                     <input className='border-2 p-3' type="password" name="newPassword" id="newPassword" value={passwordData.newPassword} onChange={handlePasswordChange} />
-                                    </div>
+                                    {passwordError.newPassword && <p className="text-red-500 text-sm">{passwordError.newPassword}</p>}
+                                </div>
                                 <button className="bg-red-500 hover:shadow-red-500/40 hover:shadow-md text-white rounded-md px-7 py-2 my-2">
                                     Save Changes
                                 </button>
