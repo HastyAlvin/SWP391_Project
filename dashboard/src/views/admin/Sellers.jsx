@@ -11,6 +11,8 @@ const Sellers = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchValue, setSearchValue] = useState("");
   const [parPage, setParPage] = useState(5);
+  const [sortOrder, setSortOrder] = useState("asc");
+  const [filteredSellers, setFilteredSellers] = useState([]);
 
   const { sellers, totalSeller } = useSelector((state) => state.seller);
 
@@ -23,10 +25,22 @@ const Sellers = () => {
     dispatch(get_active_sellers(obj));
   }, [searchValue, currentPage, parPage]);
 
+  useEffect(() => {
+    setFilteredSellers([...sellers]);
+  }, [sellers]);
+
+  const handleSort = () => {
+    const sortedSellers = [...filteredSellers].sort((a, b) => {
+      return sortOrder === "asc" ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name);
+    });
+    setFilteredSellers(sortedSellers);
+    setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+  };
+
   return (
     <div className="px-4 py-6">
       <div className="w-full p-5 bg-white rounded-lg shadow-md">
-      <h1 className="text-2xl font-bold mb-4">Sellers</h1>
+        <h1 className="text-2xl font-bold mb-4">Sellers</h1>
         {/* Filter & Search */}
         <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-4">
           <select
@@ -51,9 +65,14 @@ const Sellers = () => {
           <table className="w-full text-sm text-left text-gray-700">
             <thead className="text-sm uppercase border-b border-gray-300 bg-gray-100">
               <tr>
-                <th className="py-3 px-4">No</th>
+                <th className="py-3 px-4">
+                  No
+                 
+                </th>
                 <th className="py-3 px-4">Image</th>
-                <th className="py-3 px-4">Name</th>
+                <th className="py-3 px-4 cursor-pointer" onClick={handleSort}>
+                  Name {sortOrder === "asc" ? "▲" : "▼"}
+                </th>
                 <th className="py-3 px-4">Shop Name</th>
                 <th className="py-3 px-4">Payment Status</th>
                 <th className="py-3 px-4">Email</th>
@@ -63,7 +82,7 @@ const Sellers = () => {
               </tr>
             </thead>
             <tbody>
-              {sellers.map((d, i) => (
+              {filteredSellers.map((d, i) => (
                 <tr key={i} className="border-b border-gray-200">
                   <td className="py-2 px-4">{i + 1}</td>
                   <td className="py-2 px-4">
