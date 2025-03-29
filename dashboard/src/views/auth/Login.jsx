@@ -5,17 +5,27 @@ import toast from 'react-hot-toast';
 import { useDispatch, useSelector } from 'react-redux';
 import { overrideStyle } from '../../utils/utils';
 import { seller_login, messageClear } from '../../store/Reducers/authReducer';
+import ForgotPassword from "./ForgotPassword.jsx";
 
 const Login = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const { loader, errorMessage, successMessage, role } = useSelector(state => state.auth);
+    const [forgotPasswordVisible, setForgotPasswordVisible] = useState(false);
 
-    const [state, setState] = useState({ 
+    const showForgotPasswordModal = () => {
+        setForgotPasswordVisible(true);
+    };
+
+    const hideForgotPasswordModal = () => {
+        setForgotPasswordVisible(false);
+    };
+
+    const [state, setState] = useState({
         email: "",
         password: ""
     });
-    
+
     const [errors, setErrors] = useState({});
 
     const validate = () => {
@@ -44,7 +54,7 @@ const Login = () => {
     useEffect(() => {
         if (successMessage) {
             toast.success(successMessage);
-            dispatch(messageClear()); 
+            dispatch(messageClear());
             if (role === 'admin') {
                 navigate('/admin/dashboard');
             } else {
@@ -66,10 +76,10 @@ const Login = () => {
                 <form onSubmit={submit}>
                     <div className='flex flex-col mb-4'>
                         <label htmlFor="email" className='text-gray-700 font-medium'>Email</label>
-                        <input 
-                            onChange={inputHandle} 
-                            value={state.email} 
-                            className='px-4 py-2 border rounded-md focus:ring-2 focus:ring-indigo-300 outline-none' 
+                        <input
+                            onChange={inputHandle}
+                            value={state.email}
+                            className='px-4 py-2 border rounded-md focus:ring-2 focus:ring-indigo-300 outline-none'
                             type="email" name='email' id='email' placeholder='Enter email' required
                         />
                         {errors.email && <p className='text-red-500 text-sm mt-1'>{errors.email}</p>}
@@ -77,10 +87,10 @@ const Login = () => {
 
                     <div className='flex flex-col mb-4'>
                         <label htmlFor="password" className='text-gray-700 font-medium'>Password</label>
-                        <input 
-                            onChange={inputHandle} 
-                            value={state.password} 
-                            className='px-4 py-2 border rounded-md focus:ring-2 focus:ring-indigo-300 outline-none' 
+                        <input
+                            onChange={inputHandle}
+                            value={state.password}
+                            className='px-4 py-2 border rounded-md focus:ring-2 focus:ring-indigo-300 outline-none'
                             type="password" name='password' id='password' placeholder='Enter password' required
                         />
                         {errors.password && <p className='text-red-500 text-sm mt-1'>{errors.password}</p>}
@@ -90,11 +100,17 @@ const Login = () => {
                         {loader ? <PropagateLoader color='#fff' cssOverride={overrideStyle} /> : 'Sign In'}
                     </button>
                 </form>
-
+                <div className='text-center mt-4'>
+                    <p onClick={showForgotPasswordModal} className='text-gray-600'>Remember password or not?</p>
+                </div>
                 <div className='text-center mt-4'>
                     <p className='text-gray-600'>Don't have an account? <Link to="/register" className='text-indigo-600 font-medium'>Sign Up</Link></p>
                 </div>
             </div>
+            <ForgotPassword
+                visible={forgotPasswordVisible}
+                onCancel={hideForgotPasswordModal}
+            />
         </div>
     );
 };
