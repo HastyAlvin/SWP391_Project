@@ -7,12 +7,14 @@ import categoryReducer from "./Reducers/categoryReducer";
 import dashboardReducer from "./Reducers/dashboardReducer";
 import productReducer from "./Reducers/productReducer";
 import sellerReducer from "./Reducers/sellerReducer";
+import userSlice from "./Reducers/userSlice";
 
 const rootReducer = {
     auth: authReducer,
     category: categoryReducer,
     product: productReducer,
     seller: sellerReducer,
+    user: userSlice,
     // chat: chatReducer,
     order: OrderReducer,
     payment: PaymentReducer,
