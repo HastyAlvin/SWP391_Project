@@ -1,25 +1,31 @@
 import React, { useEffect } from 'react';
-import { FaEye, FaRegHeart, FaRegTrashAlt } from "react-icons/fa";
+import { FaEye, FaRegTrashAlt } from "react-icons/fa";
 import { RiShoppingCartLine } from "react-icons/ri";
 import Rating from '../Rating';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { get_wishlist_products, remove_wishlist, messageClear, add_to_card } from '../../store/reducers/cardReducer';
+import { 
+    get_wishlist_products, 
+    remove_wishlist, 
+    messageClear, 
+    add_to_card, 
+    get_card_products
+} from '../../store/reducers/cardReducer';
 import toast from 'react-hot-toast';
 
 const Wishlist = () => { 
     const dispatch = useDispatch();
     const { userInfo } = useSelector(state => state.auth);
-    const { wishlist, successMessage } = useSelector(state => state.card);
-
-    // Load danh sách wishlist
+    const { wishlist, successMessage, card_products } = useSelector(state => state.card);
+    
+    // Load danh sách wishlist khi trang được tải
     useEffect(() => {
         if (userInfo?.id) {
             dispatch(get_wishlist_products(userInfo.id));
         }
     }, [dispatch, userInfo]);
 
-    // Hiển thị thông báo thành công
+    // Hiển thị thông báo thành công khi thêm vào giỏ hàng
     useEffect(() => { 
         if (successMessage) {
             toast.success(successMessage);
@@ -29,12 +35,32 @@ const Wishlist = () => {
 
     // Thêm sản phẩm từ Wishlist vào giỏ hàng
     const handleAddToCart = (product) => {
+        if (!userInfo?.id) {
+            console.error("Lỗi: userInfo.id bị undefined!");
+            return;
+        }
+
+        if (!product?._id) {
+            console.error("Lỗi: product._id bị undefined!");
+            return;
+        }
+
+        console.log("Adding to cart:", {
+            productId: product._id,
+            userId: userInfo.id,
+            quantity: 1,
+            price: product.price
+        });
+
         dispatch(add_to_card({
             productId: product._id,
             userId: userInfo.id,
-            quantity: 1, // Đảm bảo quantity có giá trị
+            quantity: 1,
             price: product.price
-        }));
+        })).then(() => {
+            dispatch(get_wishlist_products(userInfo.id)); // Cập nhật lại wishlist sau khi thêm vào giỏ hàng
+            dispatch(get_card_products(userInfo.id)); // Cập nhật lại giỏ hàng
+        });
     };
 
     return (
