@@ -172,40 +172,33 @@ product_details = async (req, res) => {
 // end method 
 
 submit_review = async (req, res) => {
-     const {productId,rating,review,name} = req.body
-
-     try {
+    const { productId, rating, review, name } = req.body;
+    
+    try {
+        console.log("Review Data Received:", req.body);
+        const userName = req.user ? req.user.name : name;
+        
         await reviewModel.create({
             productId,
-            name,
+            name: userName || "Anonymous",
             rating,
             review,
             date: moment(Date.now()).format('LL')
-        })
-
-        let rat = 0;
-        const reviews = await reviewModel.find({
-            productId
-        })
-        for (let i = 0; i < reviews.length; i++) {
-            rat = rat + reviews[i].rating 
-        }
-        let productRating = 0
-        if (reviews.length !== 0) {
-            productRating = (rat / reviews.length).toFixed(1)
-        }
-
-        await productModel.findByIdAndUpdate(productId,{
-            rating : productRating
-        })
-        responseReturn(res, 201, {
-            message: "Review Added Successfully"
-        })
-
+        });
         
-     } catch (error) {
-        console.log(error.message)
-     }
+        let rat = 0;
+        const reviews = await reviewModel.find({ productId });
+        for (let i = 0; i < reviews.length; i++) {
+            rat = rat + reviews[i].rating;
+        }
+        let productRating = reviews.length !== 0 ? (rat / reviews.length).toFixed(1) : 0;
+        
+        await productModel.findByIdAndUpdate(productId, { rating: productRating });
+        
+        responseReturn(res, 201, { message: "Review Added Successfully" });
+    } catch (error) {
+        console.log(error.message);
+    }
 }
 // end method 
 

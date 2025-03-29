@@ -74,13 +74,13 @@ export const product_details = createAsyncThunk(
 
 export const customer_review = createAsyncThunk(
     'review/customer_review',
-    async(info, { fulfillWithValue }) => {
+    async (info, { fulfillWithValue }) => {
         try {
-            const {data} = await api.post('/home/customer/submit-review',info)
-            //  console.log(data)
-            return fulfillWithValue(data)
+            console.log("Submitting Review:", info);
+            const { data } = await api.post('/home/customer/submit-review', info);
+            return fulfillWithValue(data);
         } catch (error) {
-            console.log(error.respone)
+            console.log(error.response);
         }
     }
 )
@@ -89,13 +89,13 @@ export const customer_review = createAsyncThunk(
 
 export const get_reviews = createAsyncThunk(
     'review/get_reviews',
-    async({productId, pageNumber}, { fulfillWithValue }) => {
+    async({ productId, pageNumber }, { fulfillWithValue }) => {
         try {
-            const {data} = await api.get(`/home/customer/get-reviews/${productId}?pageNo=${pageNumber}`)
-            //  console.log(data)
-            return fulfillWithValue(data)
+            const { data } = await api.get(`/home/customer/get-reviews/${productId}?pageNo=${pageNumber}`);
+            console.log("Reviews received:", data.reviews);
+            return fulfillWithValue(data);
         } catch (error) {
-            console.log(error.respone)
+            console.log(error.response);
         }
     }
 )
