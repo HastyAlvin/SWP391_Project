@@ -35,7 +35,7 @@ class dashboardController {
         totalProduct,
         totalOrder,
         totalSeller,
-        messages,
+        // messages,
         recentOrders,
         totalSale: totalSale.length > 0 ? totalSale[0].totalAmount : 0,
       });
@@ -70,23 +70,23 @@ class dashboardController {
         })
         .countDocuments();
 
-      // const totalOrder = await authOrder.find({
-      //     sellerId: new ObjectId(id) }).countDocuments()
+      const totalOrder = await authOrder.find({
+          sellerId: new ObjectId(id) }).countDocuments()
 
-      // const totalPendingOrder = await authOrder .find({
-      //     $and:[
-      //         {
-      //             sellerId: {
-      //                 $eq: new ObjectId(id)
-      //             }
-      //         },
-      //         {
-      //             delivery_status :{
-      //                 $eq: 'pending'
-      //             }
-      //         }
-      //     ]
-      // }).countDocuments()
+      const totalPendingOrder = await authOrder .find({
+          $and:[
+              {
+                  sellerId: {
+                      $eq: new ObjectId(id)
+                  }
+              },
+              {
+                  delivery_status :{
+                      $eq: 'pending'
+                  }
+              }
+          ]
+      }).countDocuments()
       // const messages = await sellerCustomerMessage.find({
       //     $or: [
       //         {
@@ -101,9 +101,9 @@ class dashboardController {
       //     ]
       // }).limit(3)
 
-      // const recentOrders = await authOrder.find({
-      //     sellerId: new ObjectId(id)
-      // }).limit(5)
+      const recentOrders = await authOrder.find({
+          sellerId: new ObjectId(id)
+      }).limit(5)
 
       responseReturn(res, 200, {
         totalProduct,
