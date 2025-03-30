@@ -26,16 +26,15 @@ const ShopProducts = ({ styles, products }) => {
 
     const add_card = (id) => {
         if (userInfo) {
-            dispatch(add_to_card({
-                userId: userInfo.id,
-                quantity: 1,
-                productId: id
-            }));
-            toast.success("Added to cart successfully!");
+           dispatch(add_to_card({
+            userId: userInfo.id,
+            quantity : 1,
+            productId : id
+           }))
         } else {
-            navigate('/login');
+            navigate('/login')
         }
-    };
+    }
 
     const add_wishlist = (pro) => {
         dispatch(add_to_wishlist({
