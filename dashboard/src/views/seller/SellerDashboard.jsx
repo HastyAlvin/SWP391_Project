@@ -3,7 +3,7 @@ import { MdCurrencyExchange, MdProductionQuantityLimits } from "react-icons/md";
 import { FaUsers } from "react-icons/fa";
 import { FaCartShopping } from "react-icons/fa6";
 import { useDispatch, useSelector } from 'react-redux';
-import { get_admin_dashboard_data } from '../../store/Reducers/dashboardReducer';
+import { get_seller_dashboard_data } from '../../store/Reducers/dashboardReducer';
 import { Link } from 'react-router-dom';
 
 const SellerDashboard = () => {
@@ -11,7 +11,7 @@ const SellerDashboard = () => {
     const { totalSale, totalOrder, totalProduct, totalSeller, recentOrder } = useSelector(state => state.dashboard);
     
     useEffect(() => {
-        dispatch(get_admin_dashboard_data());
+        dispatch(get_seller_dashboard_data());
     }, [dispatch]);
     
     return (
