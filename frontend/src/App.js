@@ -13,6 +13,7 @@ import Register from "./components/Register";
 import Card from "./pages/Card";
 import Shipping from "./pages/Shipping";
 import ConfirmOrder from './pages/ConfirmOrder';
+import CategoryShop from './pages/CategoryShop';
 
 import ProtectUser from "./utils/ProtectUser";
 import Dashboard from "./pages/Dashboard";
@@ -32,16 +33,17 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/shops" element={<Shops />} />
-        <Route path="/products/search?" element={<SearchProducts />} />
-        <Route path="/product/details/:slug" element={<Details />} />
-        <Route path="/card" element={<Card />} />
-        <Route path="/shipping" element={<Shipping />} />
-        <Route path="/payment" element={<Payment />} />
-        <Route path='/order/confirm?' element={<ConfirmOrder/>} /> 
+      <Route path='/' element={<Home/>} />
+      <Route path='/login' element={<Login/>} />
+      <Route path='/register' element={<Register/>} />
+      <Route path='/shops' element={<Shops/>} />
+      <Route path='/card' element={<Card/>} />
+      <Route path='/shipping' element={<Shipping/>} />
+      <Route path='/payment' element={<Payment/>} />
+      <Route path='/products?' element={<CategoryShop/>} />
+      <Route path='/products/search?' element={<SearchProducts/>} />
+      <Route path='/product/details/:slug' element={<Details/>} /> 
+      <Route path='/order/confirm?' element={<ConfirmOrder/>} /> 
 
 
         <Route path="/dashboard" element={<ProtectUser />}>

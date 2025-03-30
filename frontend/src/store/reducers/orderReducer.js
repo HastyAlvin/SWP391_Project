@@ -28,7 +28,7 @@ export const get_orders = createAsyncThunk(
     'order/get_orders',
     async({customerId,status}, { rejectWithValue,fulfillWithValue }) => {
         try {
-            const {data} = await api.get(`/home/coustomer/get-orders/${customerId}/${status}`) 
+            const {data} = await api.get(`/home/customer/get-orders/${customerId}/${status}`) 
             // console.log(data)
             return fulfillWithValue(data)
         } catch (error) {
@@ -42,7 +42,7 @@ export const get_order_details = createAsyncThunk(
     'order/get_order_details',
     async(orderId , { rejectWithValue,fulfillWithValue }) => {
         try {
-            const {data} = await api.get(`/home/coustomer/get-order-details/${orderId}`) 
+            const {data} = await api.get(`/home/customer/get-order-details/${orderId}`) 
             // console.log(data)
             return fulfillWithValue(data)
         } catch (error) {
