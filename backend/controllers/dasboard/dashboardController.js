@@ -5,7 +5,7 @@ const customerOrder = require("../../models/customerOrder");
 const sellerModel = require("../../models/sellerModel");
 // const adminSellerMessage = require('../../models/chat/adminSellerMessage')
 const sellerWallet = require("../../models/sellerWallet");
-// const authOrder = require('../../models/authOrder')
+const authOrder = require('../../models/authOrder')
 // const sellerCustomerMessage = require('../../models/chat/sellerCustomerMessage')
 const bannerModel = require("../../models/bannerModel");
 const {
@@ -109,7 +109,7 @@ class dashboardController {
         totalProduct,
         totalOrder,
         totalPendingOrder,
-        messages,
+        // messages,
         recentOrders,
         totalSale: totalSale.length > 0 ? totalSale[0].totalAmount : 0,
       });
