@@ -48,7 +48,7 @@ const Banner = () => {
                             >
                                 {
                                     banners.length > 0 && banners.map((b, i) => <Link key={i} to={`product/details/${b.link}`}>
-                                        <img src={b.banner} alt="" />
+                                        <img src={b.banner} alt="" className="w-full h-[400px] object-cover" />
                                     </Link>)
                                 }
                             </Carousel>
