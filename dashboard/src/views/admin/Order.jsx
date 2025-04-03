@@ -20,8 +20,14 @@ const Order = () => {
       page: parseInt(currentPage),
       searchValue,
     };
+    console.log("Fetching orders with:", obj); // Debug log
     dispatch(get_admin_orders(obj));
-  }, [searchValue, currentPage, parPage]);
+  }, [searchValue, currentPage, parPage, dispatch]);
+
+  useEffect(() => {
+    console.log("Total Orders:", totalOrder); // Debug log
+    console.log("My Orders:", myOrders); // Debug log
+  }, [totalOrder, myOrders]);
 
   return (
     <div className="px-4 lg:px-8 py-5">
@@ -89,20 +95,18 @@ const Order = () => {
                     className="py-3 w-[8%] cursor-pointer transition-transform"
                   >
                     <LuArrowDown
-                      className={`transform ${
-                        show === o._id ? "rotate-180" : "rotate-0"
-                      }`}
+                      className={`transform ${show === o._id ? "rotate-180" : "rotate-0"
+                        }`}
                     />
                   </div>
                 </div>
 
                 {/* Suborders */}
                 <div
-                  className={`transition-all ${
-                    show === o._id
-                      ? "block border-b border-gray-300 bg-gray-100"
-                      : "hidden"
-                  }`}
+                  className={`transition-all ${show === o._id
+                    ? "block border-b border-gray-300 bg-gray-100"
+                    : "hidden"
+                    }`}
                 >
                   {o.suborder.map((so) => (
                     <div
@@ -128,17 +132,16 @@ const Order = () => {
         </div>
 
         {/* Pagination */}
-        {totalOrder > parPage && (
-          <div className="w-full flex justify-end mt-4">
-            <Pagination
-              pageNumber={currentPage}
-              setPageNumber={setCurrentPage}
-              totalItem={totalOrder}
-              parPage={parPage}
-              showItem={4}
-            />
-          </div>
-        )}
+        <div className="w-full flex justify-end mt-4">
+          {console.log('Debug - totalOrder:', totalOrder, 'parPage:', parPage)}
+          <Pagination
+            pageNumber={currentPage}
+            setPageNumber={setCurrentPage}
+            totalItem={totalOrder}
+            parPage={parPage}
+            showItem={4}
+          />
+        </div>
       </div>
     </div>
   );
