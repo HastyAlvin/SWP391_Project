@@ -100,8 +100,8 @@ const Login = () => {
                         {loader ? <PropagateLoader color='#fff' cssOverride={overrideStyle} /> : 'Sign In'}
                     </button>
                 </form>
-                <div className='text-center mt-4'>
-                    <p onClick={showForgotPasswordModal} className='text-gray-600'>Remember password or not?</p>
+                <div className='text-center mt-4 '>
+                    <p onClick={showForgotPasswordModal} style={{cursor:'pointer'}} className='text-gray-600 group-hover:text-blue-500'>Remember password or not?</p>
                 </div>
                 <div className='text-center mt-4'>
                     <p className='text-gray-600'>Don't have an account? <Link to="/register" className='text-indigo-600 font-medium'>Sign Up</Link></p>
