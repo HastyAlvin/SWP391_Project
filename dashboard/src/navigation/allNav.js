@@ -41,7 +41,13 @@ export const allNav = [
     role: "admin",
     path: "/admin/dashboard/sellers",
   },
-
+  {
+    id: 8,
+    title: "Manage Sellers",
+    icon: <FaUsers />,
+    role: "admin",
+    path: "/admin/dashboard/manage-sellers",
+  },
   {
     id: 6,
     title: "Deactive Sellers",
