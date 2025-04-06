@@ -3,6 +3,7 @@ import cardReducer from "./reducers/cardReducer";
 import dashboardReducer from "./reducers/dashboardReducer";
 import homeReducer from "./reducers/homeReducer";
 import orderReducer from "./reducers/orderReducer";
+import adminReducer from "./Reducers/adminReducer";
 
 const rootReducer = {
     home: homeReducer,
@@ -10,5 +11,7 @@ const rootReducer = {
     card: cardReducer,
     order: orderReducer,
     dashboard: dashboardReducer,
+    admin: adminReducer,
+
 }
 export default rootReducer;

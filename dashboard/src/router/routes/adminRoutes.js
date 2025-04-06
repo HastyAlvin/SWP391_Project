@@ -9,6 +9,10 @@ const SellerRequest = lazy(() => import("../../views/admin/SellerRequest"));
 const SellerDetails = lazy(() => import("../../views/admin/SellerDetails"));
 const Sellers = lazy(() => import("../../views/admin/Sellers"));
 const PaymentRequest = lazy(() => import("../../views/admin/PaymentRequest"));
+const ManageSellers = lazy(() => import("../../views/admin/ManageSellers"));
+const AddSeller = lazy(() => import("../../views/admin/AddSeller"));
+const EditSeller = lazy(() => import("../../views/admin/EditSeller"));
+const ChangeSellerPassword = lazy(() => import("../../views/admin/ChangeSellerPassword"));
 
 export const adminRoutes = [
   {
@@ -59,4 +63,26 @@ export const adminRoutes = [
     element: <PaymentRequest />,
     role: "admin",
   },
-];
+
+  // Các routes mới quản lý seller
+  {
+    path: "admin/dashboard/manage-sellers",
+    element: <ManageSellers />,
+    role: "admin",
+  },
+  {
+    path: "admin/dashboard/seller/add",
+    element: <AddSeller />,
+    role: "admin",
+  },
+  {
+    path: "admin/dashboard/seller/edit/:sellerId",
+    element: <EditSeller />,
+    role: "admin",
+  },
+  {
+    path: "admin/dashboard/seller/change-password/:sellerId",
+    element: <ChangeSellerPassword />,
+    role: "admin",
+  },
+]
