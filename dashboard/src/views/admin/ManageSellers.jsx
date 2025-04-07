@@ -176,13 +176,13 @@ const ManageSellers = () => {
         )}
 
         {/* Pagination */}
-        {totalSellers > parPage && (
+        {sellers && sellers.length > 0 && (
           <div className="flex justify-end mt-6">
             <Pagination
               pageNumber={currentPage}
               setPageNumber={setCurrentPage}
               totalItem={totalSellers}
-              parPage={parPage}
+              parPage={parseInt(parPage)}
               showItem={5}
             />
           </div>
