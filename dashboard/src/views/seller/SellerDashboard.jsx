@@ -9,11 +9,11 @@ import { Link } from 'react-router-dom';
 const SellerDashboard = () => {
     const dispatch = useDispatch();
     const { totalSale, totalOrder, totalProduct, totalSeller, recentOrder } = useSelector(state => state.dashboard);
-    
+
     useEffect(() => {
         dispatch(get_seller_dashboard_data());
     }, [dispatch]);
-    
+
     return (
         <div className='px-2 md:px-7 py-5'>
             <div className='w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-7'>
@@ -22,7 +22,7 @@ const SellerDashboard = () => {
                 <DashboardCard title='Sellers' value={totalSeller} icon={<FaUsers />} bgColor='bg-[#e9feea]' iconBg='bg-[#038000]' />
                 <DashboardCard title='Orders' value={totalOrder} icon={<FaCartShopping />} bgColor='bg-[#ecebff]' iconBg='bg-[#0200f8]' />
             </div>
-            
+
             {/* Recent Orders Table */}
             <div className='w-full p-4 bg-[#FFFFFF] rounded-md mt-6'>
                 <h2 className='font-semibold text-lg text-[#000000] pb-3'>Recent Orders</h2>
@@ -45,7 +45,7 @@ const SellerDashboard = () => {
                                     <td className='py-3 px-4'>{order.payment_status}</td>
                                     <td className='py-3 px-4'>{order.delivery_status}</td>
                                     <td className='py-3 px-4'>
-                                        <Link to={`/admin/dashboard/order/details/${order._id}`} className='text-blue-400'>View</Link>
+                                        <Link to={`/seller/dashboard/order/details/${order._id}`} className='text-blue-400'>View</Link>
                                     </td>
                                 </tr>
                             ))}
