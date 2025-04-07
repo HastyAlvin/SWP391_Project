@@ -38,11 +38,15 @@ const OrderDetails = () => {
     }, [successMessage, errorMessage])
 
     return (
-        <div className='px-2 lg:px-7 pt-5'>
-            <div className='w-full p-4 bg-[#6a5fdf] rounded-md'>
-                <div className='flex justify-between items-center p-4'>
-                    <h2 className='text-xl text-[#d0d2d6]'>Order Details</h2>
-                    <select onChange={status_update} value={status} name="" id="" className='px-4 py-2 focus:border-indigo-500 outline-none bg-[#475569] border border-slate-700 rounded-md text-[#d0d2d6]'>
+        <div className='px-4 py-6'>
+            <div className='w-full p-5 bg-white rounded-lg shadow-md'>
+                <div className='flex justify-between items-center mb-4'>
+                    <h1 className='text-2xl font-bold text-gray-700'>Order Details</h1>
+                    <select
+                        onChange={status_update}
+                        value={status}
+                        className='px-4 py-2 border border-gray-300 rounded-md bg-white text-gray-700 focus:ring focus:ring-indigo-300'
+                    >
                         <option value="pending">pending</option>
                         <option value="processing">processing</option>
                         <option value="warehouse">warehouse</option>
@@ -51,47 +55,48 @@ const OrderDetails = () => {
                     </select>
                 </div>
 
-                <div className='p-4'>
-                    <div className='flex gap-2 text-lg text-[#d0d2d6]'>
-                        <h2>#{order._id}</h2>
-                        <span>{order.date}</span>
+                <div className='bg-gray-50 p-4 rounded-md mb-4'>
+                    <div className='flex gap-2 text-gray-700'>
+                        <h2 className='font-medium'>Order ID: #{order._id}</h2>
+                        <span className='text-gray-500'>{order.date}</span>
                     </div>
+                </div>
 
-                    <div className='flex flex-wrap'>
-                        <div className='w-[30%]'>
-                            <div className='pr-3 text-[#d0d2d6] text-lg'>
-                                <div className='flex flex-col gap-1'>
-                                    <h2 className='pb-2 font-semibold'>Deliver To : {order.shippingInfo} </h2>
-
-                                </div>
-                                <div className='flex justify-start items-center gap-3'>
-                                    <h2>Payment Status: </h2>
-                                    <span className='text-base'>{order.payment_status}</span>
-                                </div>
-                                <span>Price : ${order.price}</span>
-
-                                {
-                                    order?.products?.map((p, i) => <div key={i} className='mt-4 flex flex-col gap-4 bg-[#8288ed] rounded-md'>
-                                        <div className='text-[#d0d2d6]'>
-                                            <div className='flex gap-3 text-md'>
-                                                <img className='w-[50px] h-[50px]' src={p.images[0]} alt="" />
-
-                                                <div>
-                                                    <h2>{p.name}</h2>
-                                                    <p>
-                                                        <span>Brand : </span>
-                                                        <span>{p.brand}</span>
-                                                        <span className='text-lg'>Quantity : {p.quantity} </span>
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>)
-                                }
-                            </div>
+                <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
+                    <div className='bg-gray-50 p-4 rounded-md'>
+                        <h2 className='font-semibold text-gray-700 mb-2'>Delivery Information</h2>
+                        <p className='text-gray-600'>Deliver To: {order.shippingInfo}</p>
+                        <div className='mt-2'>
+                            <span className='text-gray-700'>Payment Status: </span>
+                            <span className='text-gray-600'>{order.payment_status}</span>
+                        </div>
+                        <div className='mt-2'>
+                            <span className='text-gray-700'>Total Price: </span>
+                            <span className='text-gray-600'>${order.price}</span>
                         </div>
                     </div>
 
+                    <div className='md:col-span-2'>
+                        <h2 className='font-semibold text-gray-700 mb-2'>Products</h2>
+                        <div className='space-y-3'>
+                            {
+                                order?.products?.map((p, i) => (
+                                    <div key={i} className='flex gap-4 bg-gray-50 p-3 rounded-md'>
+                                        <img className='w-20 h-20 object-cover rounded-md' src={p.images[0]} alt={p.name} />
+                                        <div>
+                                            <h3 className='font-medium text-gray-700'>{p.name}</h3>
+                                            <p className='text-gray-600'>
+                                                Brand: {p.brand}
+                                            </p>
+                                            <p className='text-gray-600'>
+                                                Quantity: {p.quantity}
+                                            </p>
+                                        </div>
+                                    </div>
+                                ))
+                            }
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
