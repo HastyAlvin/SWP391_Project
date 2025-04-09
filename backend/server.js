@@ -129,6 +129,7 @@ app.use("/api", require("./routes/home/customerAuthRoutes"));
 app.use("/api", require("./routes/paymentRoutes"));
 app.use("/api", require("./routes/dashboard/dashboardRoutes"));
 app.use("/api", require("./routes/dashboard/adminRoutes"));
+app.use("/api/customers", require("./routes/home/customerRoutes"));
 app.get("/", (req, res) => res.send("Hello Server"));
 const port = process.env.PORT;
 dbConnect();
