@@ -65,7 +65,7 @@ const CustomerDetails = () => {
 
               <div className="grid grid-cols-1 gap-3">
                 <div className="flex">
-                  <span className="font-medium text-gray-600 w-32">Full Name:</span>
+                  <span className="font-medium text-gray-600 w-32">Name:</span>
                   <span className="text-gray-800">{customer.name}</span>
                 </div>
                 <div className="flex">
@@ -73,7 +73,7 @@ const CustomerDetails = () => {
                   <span className="text-gray-800">{customer.email}</span>
                 </div>
                 <div className="flex">
-                  <span className="font-medium text-gray-600 w-32">Registration Date:</span>
+                  <span className="font-medium text-gray-600 w-32">Registered:</span>
                   <span className="text-gray-800">
                     {new Date(customer.createdAt).toLocaleDateString('en-US', {
                       year: 'numeric',

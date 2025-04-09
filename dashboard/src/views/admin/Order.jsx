@@ -20,128 +20,116 @@ const Order = () => {
       page: parseInt(currentPage),
       searchValue,
     };
-    console.log("Fetching orders with:", obj); // Debug log
     dispatch(get_admin_orders(obj));
   }, [searchValue, currentPage, parPage, dispatch]);
 
-  useEffect(() => {
-    console.log("Total Orders:", totalOrder); // Debug log
-    console.log("My Orders:", myOrders); // Debug log
-  }, [totalOrder, myOrders]);
-
   return (
-    <div className="px-4 lg:px-8 py-5">
-      <div className="w-full p-6 bg-white shadow-md rounded-lg">
-        {/* Header */}
-        <div className="flex justify-between items-center mb-4">
-          <select
-            onChange={(e) => setParPage(parseInt(e.target.value))}
-            className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 focus:ring-2 focus:ring-indigo-400"
-          >
-            <option value="5">5</option>
-            <option value="10">10</option>
-            <option value="20">20</option>
-          </select>
+    <div className="px-4 py-6">
+      <div className="w-full p-5 bg-white rounded-lg shadow-md">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-2xl font-bold text-gray-800">Manage Orders</h1>
+        </div>
+
+        {/* Filter & Search */}
+        <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
+          <div className="flex items-center gap-4">
+            <select
+              onChange={(e) => setParPage(parseInt(e.target.value))}
+              value={parPage}
+              className="px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            >
+              <option value="5">5</option>
+              <option value="10">10</option>
+              <option value="20">20</option>
+            </select>
+          </div>
+
           <input
-            onChange={(e) => setSearchValue(e.target.value)}
-            value={searchValue}
-            className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 focus:ring-2 focus:ring-indigo-400"
             type="text"
-            placeholder="Search..."
+            placeholder="Search orders..."
+            value={searchValue}
+            onChange={(e) => setSearchValue(e.target.value)}
+            className="px-4 py-2 border border-gray-300 rounded-md bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 w-full md:w-64"
           />
         </div>
 
-        {/* Table */}
-        <div className="relative overflow-x-auto">
-          <div className="w-full text-sm text-gray-700">
-            {/* Table Header */}
-            <div className="uppercase font-semibold border-b border-gray-300">
-              <div className="flex justify-between items-center">
-                <div className="py-3 w-[25%]">Order ID</div>
-                <div className="py-3 w-[13%]">Price</div>
-                <div className="py-3 w-[18%]">Payment Status</div>
-                <div className="py-3 w-[18%]">Order Status</div>
-                <div className="py-3 w-[18%]">Action</div>
-                <div className="py-3 w-[8%]">
-                  <LuArrowDown />
-                </div>
-              </div>
-            </div>
-
-            {/* Table Rows */}
-            {myOrders.map((o) => (
-              <div key={o._id} className="text-gray-700">
-                <div className="flex justify-between items-start border-b border-gray-300">
-                  <div className="py-3 w-[25%] font-medium whitespace-nowrap">
-                    #{o._id}
-                  </div>
-                  <div className="py-3 w-[13%] font-medium">${o.price}</div>
-                  <div className="py-3 w-[18%] font-medium">
-                    {o.payment_status}
-                  </div>
-                  <div className="py-3 w-[18%] font-medium">
-                    {o.delivery_status}
-                  </div>
-                  <div className="py-3 w-[18%] font-medium">
-                    <Link
-                      to={`/admin/dashboard/order/details/${o._id}`}
-                      className="text-indigo-500 hover:underline"
-                    >
-                      View
-                    </Link>
-                  </div>
-                  <div
-                    onClick={() => setShow(o._id === show ? false : o._id)}
-                    className="py-3 w-[8%] cursor-pointer transition-transform"
-                  >
-                    <LuArrowDown
-                      className={`transform ${show === o._id ? "rotate-180" : "rotate-0"
-                        }`}
-                    />
-                  </div>
-                </div>
-
-                {/* Suborders */}
-                <div
-                  className={`transition-all ${show === o._id
-                    ? "block border-b border-gray-300 bg-gray-100"
-                    : "hidden"
-                    }`}
-                >
-                  {o.suborder.map((so) => (
-                    <div
-                      key={so._id}
-                      className="flex justify-start items-start border-b border-gray-300"
-                    >
-                      <div className="py-3 w-[25%] font-medium pl-3">
-                        #{so._id}
-                      </div>
-                      <div className="py-3 w-[13%] font-medium">${so.price}</div>
-                      <div className="py-3 w-[18%] font-medium">
-                        {so.payment_status}
-                      </div>
-                      <div className="py-3 w-[18%] font-medium">
-                        {so.delivery_status}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
+        {/* Orders Table */}
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm text-left text-gray-700">
+            <thead className="text-xs uppercase bg-gray-100">
+              <tr>
+                <th className="px-4 py-3">Order ID</th>
+                <th className="px-4 py-3">Price</th>
+                <th className="px-4 py-3">Payment Status</th>
+                <th className="px-4 py-3">Order Status</th>
+                <th className="px-4 py-3">Action</th>
+                <th className="px-4 py-3"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {myOrders.map((o) => (
+                <React.Fragment key={o._id}>
+                  <tr className="border-b hover:bg-gray-50">
+                    <td className="px-4 py-3 font-medium">#{o._id}</td>
+                    <td className="px-4 py-3">${o.price}</td>
+                    <td className="px-4 py-3">{o.payment_status}</td>
+                    <td className="px-4 py-3">{o.delivery_status}</td>
+                    <td className="px-4 py-3">
+                      <Link
+                        to={`/admin/dashboard/order/details/${o._id}`}
+                        className="text-blue-500 hover:underline"
+                      >
+                        View
+                      </Link>
+                    </td>
+                    <td className="px-4 py-3">
+                      <button
+                        onClick={() => setShow(o._id === show ? false : o._id)}
+                        className="transform transition-transform"
+                      >
+                        <LuArrowDown
+                          className={show === o._id ? "rotate-180" : "rotate-0"}
+                        />
+                      </button>
+                    </td>
+                  </tr>
+                  {show === o._id && (
+                    <tr>
+                      <td colSpan="6" className="bg-gray-50">
+                        <div className="px-4 py-2">
+                          {o.suborder.map((so) => (
+                            <div
+                              key={so._id}
+                              className="flex gap-4 py-2 border-b last:border-0"
+                            >
+                              <div className="w-1/4">#{so._id}</div>
+                              <div className="w-1/4">${so.price}</div>
+                              <div className="w-1/4">{so.payment_status}</div>
+                              <div className="w-1/4">{so.delivery_status}</div>
+                            </div>
+                          ))}
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                </React.Fragment>
+              ))}
+            </tbody>
+          </table>
         </div>
 
         {/* Pagination */}
-        <div className="w-full flex justify-end mt-4">
-          {console.log('Debug - totalOrder:', totalOrder, 'parPage:', parPage)}
-          <Pagination
-            pageNumber={currentPage}
-            setPageNumber={setCurrentPage}
-            totalItem={totalOrder}
-            parPage={parPage}
-            showItem={4}
-          />
-        </div>
+        {totalOrder > parPage && (
+          <div className="flex justify-end mt-6">
+            <Pagination
+              pageNumber={currentPage}
+              setPageNumber={setCurrentPage}
+              totalItem={totalOrder}
+              parPage={parPage}
+              showItem={4}
+            />
+          </div>
+        )}
       </div>
     </div>
   );
