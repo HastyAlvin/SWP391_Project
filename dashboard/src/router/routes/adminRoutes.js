@@ -14,6 +14,12 @@ const AddSeller = lazy(() => import("../../views/admin/AddSeller"));
 const EditSeller = lazy(() => import("../../views/admin/EditSeller"));
 const ChangeSellerPassword = lazy(() => import("../../views/admin/ChangeSellerPassword"));
 
+// Customer management components
+const ManageCustomers = lazy(() => import("../../views/admin/ManageCustomers"));
+const CustomerDetails = lazy(() => import("../../views/admin/CustomerDetails"));
+const AddCustomer = lazy(() => import("../../views/admin/AddCustomer"));
+const EditCustomer = lazy(() => import("../../views/admin/EditCustomer"));
+
 export const adminRoutes = [
   {
     path: "admin/dashboard",
@@ -64,7 +70,7 @@ export const adminRoutes = [
     role: "admin",
   },
 
-  // Các routes mới quản lý seller
+  // Các routes quản lý seller
   {
     path: "admin/dashboard/manage-sellers",
     element: <ManageSellers />,
@@ -85,4 +91,26 @@ export const adminRoutes = [
     element: <ChangeSellerPassword />,
     role: "admin",
   },
-]
+
+  // Các routes quản lý khách hàng
+  {
+    path: "admin/dashboard/manage-customers",
+    element: <ManageCustomers />,
+    role: "admin",
+  },
+  {
+    path: "admin/dashboard/customer/details/:customerId",
+    element: <CustomerDetails />,
+    role: "admin",
+  },
+  {
+    path: "admin/dashboard/customer/add",
+    element: <AddCustomer />,
+    role: "admin",
+  },
+  {
+    path: "admin/dashboard/customer/edit/:customerId",
+    element: <EditCustomer />,
+    role: "admin",
+  },
+];
