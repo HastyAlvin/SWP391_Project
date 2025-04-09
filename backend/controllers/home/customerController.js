@@ -3,7 +3,7 @@ const { responseReturn } = require('../../utiles/response');
 const bcrypt = require('bcrypt');
 
 class CustomerController {
-    // [GET] /api/customers - Lấy danh sách tất cả khách hàng
+    // [GET] /api/customers - Get all customers
     getAllCustomers = async (req, res) => {
         try {
             const customers = await Customer.find().select('-password');
@@ -13,14 +13,14 @@ class CustomerController {
         }
     }
 
-    // [GET] /api/customers/:id - Lấy thông tin một khách hàng
+    // [GET] /api/customers/:id - Get a customer by ID
     getCustomer = async (req, res) => {
         try {
             const { id } = req.params;
             const customer = await Customer.findById(id).select('-password');
 
             if (!customer) {
-                return responseReturn(res, 404, { error: 'Không tìm thấy khách hàng' });
+                return responseReturn(res, 404, { error: 'Customer not found' });
             }
 
             return responseReturn(res, 200, { customer });
@@ -29,22 +29,22 @@ class CustomerController {
         }
     }
 
-    // [POST] /api/customers - Tạo khách hàng mới
+    // [POST] /api/customers - Create a new customer
     createCustomer = async (req, res) => {
         try {
             const { name, email, password, method } = req.body;
 
-            // Kiểm tra email đã tồn tại
+            // Check if email already exists
             const existingCustomer = await Customer.findOne({ email });
             if (existingCustomer) {
-                return responseReturn(res, 400, { error: 'Email đã được sử dụng' });
+                return responseReturn(res, 400, { error: 'Email is already in use' });
             }
 
-            // Mã hóa mật khẩu
+            // Hash password
             const salt = await bcrypt.genSalt(10);
             const hashPassword = await bcrypt.hash(password, salt);
 
-            // Tạo khách hàng mới
+            // Create new customer
             const customer = await Customer.create({
                 name,
                 email,
@@ -53,7 +53,7 @@ class CustomerController {
             });
 
             return responseReturn(res, 201, {
-                message: 'Tạo khách hàng thành công',
+                message: 'Customer created successfully',
                 customer: {
                     _id: customer._id,
                     name: customer.name,
@@ -66,38 +66,38 @@ class CustomerController {
         }
     }
 
-    // [PUT] /api/customers/:id - Cập nhật thông tin khách hàng
+    // [PUT] /api/customers/:id - Update customer information
     updateCustomer = async (req, res) => {
         try {
             const { id } = req.params;
             const { name, email, password } = req.body;
 
-            // Kiểm tra khách hàng tồn tại
+            // Check if customer exists
             const customer = await Customer.findById(id);
             if (!customer) {
-                return responseReturn(res, 404, { error: 'Không tìm thấy khách hàng' });
+                return responseReturn(res, 404, { error: 'Customer not found' });
             }
 
-            // Nếu cập nhật email, kiểm tra email đã tồn tại
+            // If updating email, check if email already exists
             if (email && email !== customer.email) {
                 const existingCustomer = await Customer.findOne({ email });
                 if (existingCustomer) {
-                    return responseReturn(res, 400, { error: 'Email đã được sử dụng' });
+                    return responseReturn(res, 400, { error: 'Email is already in use' });
                 }
             }
 
-            // Cập nhật thông tin
+            // Update information
             const updateData = {};
             if (name) updateData.name = name;
             if (email) updateData.email = email;
 
-            // Nếu có cập nhật mật khẩu
+            // If updating password
             if (password) {
                 const salt = await bcrypt.genSalt(10);
                 updateData.password = await bcrypt.hash(password, salt);
             }
 
-            // Cập nhật và trả về khách hàng mới
+            // Update and return new customer
             const updatedCustomer = await Customer.findByIdAndUpdate(
                 id,
                 updateData,
@@ -105,7 +105,7 @@ class CustomerController {
             ).select('-password');
 
             return responseReturn(res, 200, {
-                message: 'Cập nhật thông tin khách hàng thành công',
+                message: 'Customer updated successfully',
                 customer: updatedCustomer
             });
         } catch (error) {
@@ -113,21 +113,21 @@ class CustomerController {
         }
     }
 
-    // [DELETE] /api/customers/:id - Xóa khách hàng
+    // [DELETE] /api/customers/:id - Delete a customer
     deleteCustomer = async (req, res) => {
         try {
             const { id } = req.params;
 
-            // Kiểm tra khách hàng tồn tại
+            // Check if customer exists
             const customer = await Customer.findById(id);
             if (!customer) {
-                return responseReturn(res, 404, { error: 'Không tìm thấy khách hàng' });
+                return responseReturn(res, 404, { error: 'Customer not found' });
             }
 
-            // Xóa khách hàng
+            // Delete customer
             await Customer.findByIdAndDelete(id);
 
-            return responseReturn(res, 200, { message: 'Xóa khách hàng thành công' });
+            return responseReturn(res, 200, { message: 'Customer deleted successfully' });
         } catch (error) {
             return responseReturn(res, 500, { error: error.message });
         }
