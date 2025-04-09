@@ -69,49 +69,34 @@ class categoryController {
      * @param {Number} req.query.parPage Số item trên mỗi trang
      */
     get_category = async (req, res) => {
-        // Lấy các tham số từ query string
-        const { page, searchValue, parPage } = req.query
+        const { page = 1, searchValue = '', parPage } = req.query
 
         try {
-            // Tính toán số lượng items cần bỏ qua để phân trang
-            let skipPage = ''
-            if (parPage && page) {
-                skipPage = parseInt(parPage) * (parseInt(page) - 1)
+            // Xây dựng query object
+            const query = {};
+            if (searchValue) {
+                query.name = { $regex: searchValue, $options: 'i' }; // Case-insensitive search
             }
 
-            // Trường hợp 1: Có searchValue và có phân trang
-            if (searchValue && page && parPage) {
-                // Tìm kiếm danh mục theo text và phân trang
-                const categorys = await categoryModel.find({
-                    $text: { $search: searchValue }
-                }).skip(skipPage).limit(parPage).sort({ createdAt: -1 })
-                // Đếm tổng số danh mục thỏa điều kiện tìm kiếm
-                const totalCategory = await categoryModel.find({
-                    $text: { $search: searchValue }
-                }).countDocuments()
-                responseReturn(res, 200, { categorys, totalCategory })
-            }
-            // Trường hợp 2: Không có searchValue nhưng có phân trang
-            else if (searchValue === '' && page && parPage) {
-                // Lấy danh mục có phân trang
-                const categorys = await categoryModel.find({}).skip(skipPage).limit(parPage).sort({ createdAt: -1 })
-                // Đếm tổng số danh mục
-                const totalCategory = await categoryModel.find({}).countDocuments()
-                responseReturn(res, 200, { categorys, totalCategory })
-            }
-            // Trường hợp 3: Lấy tất cả danh mục không phân trang
-            else {
-                // Lấy toàn bộ danh mục, sắp xếp theo thời gian tạo mới nhất
-                const categorys = await categoryModel.find({}).sort({ createdAt: -1 })
-                // Đếm tổng số danh mục
-                const totalCategory = await categoryModel.find({}).countDocuments()
-                responseReturn(res, 200, { categorys, totalCategory })
-            }
+            // Tính toán pagination
+            const skip = parPage ? (parseInt(page) - 1) * parseInt(parPage) : 0;
+            const limit = parPage ? parseInt(parPage) : null;
+
+            // Tạo base query với điều kiện tìm kiếm
+            const baseQuery = categoryModel.find(query).sort({ createdAt: -1 });
+
+            // Thực hiện queries
+            const [categorys, totalCategory] = await Promise.all([
+                // Clone query để thêm skip/limit nếu cần
+                limit ? baseQuery.clone().skip(skip).limit(limit) : baseQuery.clone(),
+                categoryModel.countDocuments(query)
+            ]);
+
+            responseReturn(res, 200, { categorys, totalCategory });
 
         } catch (error) {
-            // Ghi log lỗi nếu có
-            console.log('Error in get_category:', error.message)
-            responseReturn(res, 500, { error: 'Internal Server Error' })
+            console.log('Error in get_category:', error.message);
+            responseReturn(res, 500, { error: 'Internal Server Error' });
         }
     }
 
@@ -180,14 +165,14 @@ class categoryController {
             const deleteCategory = await categoryModel.findByIdAndDelete(categoryId);
 
             if (!deleteCategory) {
-                console.log(`Cateogry with id ${categoryId} not found`);
-                return res.status(404).json({ message: 'Category not found' });
+                console.log(`Category with id ${categoryId} not found`);
+                return responseReturn(res, 404, { error: 'Category not found' });
             }
-            res.status(200).json({ message: 'Category deleted successfully' });
+            responseReturn(res, 200, { message: 'Category deleted successfully' });
 
         } catch (error) {
-            console.log(`Error delete category with id ${categoryId}:`, error);
-            res.status(500).json({ message: 'Internal Server Error' });
+            console.log(`Error deleting category:`, error);
+            responseReturn(res, 500, { error: 'Internal Server Error' });
         }
     }
 
