@@ -3,15 +3,18 @@ import api from "../../api/api";
 
 export const get_category = createAsyncThunk(
     'product/get_category',
-    async (_, { fulfillWithValue, rejectWithValue }) => {
+    async ({ page = 1, searchValue = '', parPage = 10 } = {}, { fulfillWithValue, rejectWithValue }) => {
         try {
-            const { data } = await api.get('/api/get-categorys')
+            const { data } = await api.get(`category-get?page=${page}&searchValue=${searchValue}&parPage=${parPage}`, {
+                withCredentials: true
+            })
             return fulfillWithValue(data)
         } catch (error) {
-            return rejectWithValue(error.response.data)
+            return rejectWithValue(error.response?.data || { error: 'Something went wrong' })
         }
     }
 )
+// End Method
 
 export const get_products = createAsyncThunk(
     'product/get_products',
@@ -121,6 +124,8 @@ export const homeReducer = createSlice({
     name: 'home',
     initialState: {
         categorys: [],
+        totalCategory: 0,
+        loading: false,
         products: [],
         totalProduct: 0,
         parPage: 3,
@@ -151,14 +156,17 @@ export const homeReducer = createSlice({
         builder
             .addCase(get_category.pending, (state) => {
                 state.loading = true
-            })
-            .addCase(get_category.rejected, (state, { payload }) => {
-                state.loading = false
-                state.errorMessage = payload.error
+                state.errorMessage = ''
             })
             .addCase(get_category.fulfilled, (state, { payload }) => {
                 state.loading = false
                 state.categorys = payload.categorys
+                state.totalCategory = payload.totalCategory
+                state.errorMessage = ''
+            })
+            .addCase(get_category.rejected, (state, { payload }) => {
+                state.loading = false
+                state.errorMessage = payload?.error || 'Something went wrong'
             })
             .addCase(get_products.fulfilled, (state, { payload }) => {
                 state.products = payload.products;
