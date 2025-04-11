@@ -1,6 +1,6 @@
 import { AiOutlineDashboard, AiOutlineShoppingCart } from "react-icons/ai";
 import { BiCategory } from "react-icons/bi";
-import { FaUserTimes, FaUsers } from "react-icons/fa";
+import { FaUserTimes, FaUsers, FaUserFriends } from "react-icons/fa";
 import { MdPayment } from "react-icons/md";
 import { FaCodePullRequest } from "react-icons/fa6";
 import { IoIosChatbubbles } from "react-icons/io";
@@ -41,7 +41,20 @@ export const allNav = [
     role: "admin",
     path: "/admin/dashboard/sellers",
   },
-
+  {
+    id: 8,
+    title: "Manage Sellers",
+    icon: <FaUsers />,
+    role: "admin",
+    path: "/admin/dashboard/manage-sellers",
+  },
+  {
+    id: 18,
+    title: "Customers",
+    icon: <FaUserFriends />,
+    role: "admin",
+    path: "/admin/dashboard/manage-customers",
+  },
   {
     id: 6,
     title: "Deactive Sellers",

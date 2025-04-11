@@ -8,6 +8,8 @@ import dashboardReducer from "./Reducers/dashboardReducer";
 import productReducer from "./Reducers/productReducer";
 import sellerReducer from "./Reducers/sellerReducer";
 import userSlice from "./Reducers/userSlice";
+import adminReducer from "./Reducers/adminReducer";
+import customerReducer from "./Reducers/customerReducer";
 
 const rootReducer = {
     auth: authReducer,
@@ -15,6 +17,8 @@ const rootReducer = {
     product: productReducer,
     seller: sellerReducer,
     user: userSlice,
+    admin: adminReducer,
+    customer: customerReducer,
     // chat: chatReducer,
     order: OrderReducer,
     payment: PaymentReducer,

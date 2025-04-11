@@ -2,20 +2,31 @@ const formidable = require("formidable")
 const { responseReturn } = require("../../utiles/response")
 const cloudinary = require('cloudinary').v2
 const categoryModel = require('../../models/categoryModel')
- 
-class categoryController{
 
+/**
+ * Controller xử lý các chức năng liên quan đến Category (Danh mục sản phẩm)
+ */
+class categoryController {
+    /**
+     * Thêm mới một danh mục
+     * @param {Request} req Request từ client
+     * @param {Response} res Response trả về client
+     */
     add_category = async (req, res) => {
+        // Khởi tạo form để parse dữ liệu
         const form = formidable()
-        form.parse(req, async(err,fields,files)=>{
+        form.parse(req, async (err, fields, files) => {
             if (err) {
-                responseReturn(res, 404,{ error : 'something went wrong'})
+                responseReturn(res, 404, { error: 'something went wrong' })
             } else {
-                let {name} = fields
-                let {image} = files
+                // Lấy tên và hình ảnh từ form data
+                let { name } = fields
+                let { image } = files
                 name = name.trim()
+                // Tạo slug từ tên danh mục
                 const slug = name.split(' ').join('-')
 
+                // Cấu hình cloudinary để upload ảnh
                 cloudinary.config({
                     cloud_name: process.env.cloud_name,
                     api_key: process.env.api_key,
@@ -23,149 +34,149 @@ class categoryController{
                     secure: true
                 })
 
-               try {
+                try {
+                    // Upload ảnh lên cloudinary
+                    const result = await cloudinary.uploader.upload(image.filepath, { folder: 'categorys' })
 
-                const result = await cloudinary.uploader.upload(image.filepath, { folder: 'categorys'})
+                    if (result) {
+                        // Tạo danh mục mới trong database
+                        const category = await categoryModel.create({
+                            name,
+                            slug,
+                            image: result.url
+                        })
+                        responseReturn(res, 201, { category, message: 'Category Added Successfully' })
 
-                if (result) {
-                    const category = await categoryModel.create({
-                        name,
-                        slug,
-                        image: result.url
-                    })
-                    responseReturn(res, 201,{ category,message : 'Category Added Successfully'})
-                    
-                } else {
-                    responseReturn(res, 404,{ error : 'Image Upload File'})
+                    } else {
+                        responseReturn(res, 404, { error: 'Image Upload File' })
+                    }
+
+                } catch (error) {
+                    responseReturn(res, 500, { error: 'Internal Server Error' })
                 }
-                
-               } catch (error) {
-                responseReturn(res, 500,{ error : 'Internal Server Error'})
-               }
- 
-
-
             }
-             
         })
     }
 
- // end method
+    // end method
 
+    /**
+     * Lấy danh sách các danh mục
+     * @param {Request} req Request từ client chứa các query params
+     * @param {Response} res Response trả về client
+     * @param {Number} req.query.page Số trang hiện tại
+     * @param {String} req.query.searchValue Giá trị tìm kiếm
+     * @param {Number} req.query.parPage Số item trên mỗi trang
+     */
     get_category = async (req, res) => {
-       const {page,searchValue, parPage} = req.query 
- 
-       try {
-            let skipPage = ''
-            if (parPage && page) {
-                skipPage = parseInt(parPage) * (parseInt(page) - 1)
+        const { page = 1, searchValue = '', parPage } = req.query
+
+        try {
+            // Xây dựng query object
+            const query = {};
+            if (searchValue) {
+                query.name = { $regex: searchValue, $options: 'i' }; // Case-insensitive search
             }
- 
-        if (searchValue && page && parPage) {
-            const categorys = await categoryModel.find({
-                $text: { $search: searchValue }
-            }).skip(skipPage).limit(parPage).sort({ createdAt: -1})
-            const totalCategory = await categoryModel.find({
-                $text: { $search: searchValue }
-            }).countDocuments()
-            responseReturn(res, 200,{categorys,totalCategory})
-        } 
-        else if(searchValue === '' && page && parPage) {
 
-            const categorys = await categoryModel.find({ }).skip(skipPage).limit(parPage).sort({ createdAt: -1})
-            const totalCategory = await categoryModel.find({ }).countDocuments()
-            responseReturn(res, 200,{categorys,totalCategory}) 
-        } 
-        
-        else {
+            // Tính toán pagination
+            const skip = parPage ? (parseInt(page) - 1) * parseInt(parPage) : 0;
+            const limit = parPage ? parseInt(parPage) : null;
 
-            const categorys = await categoryModel.find({ }).sort({ createdAt: -1})
-            const totalCategory = await categoryModel.find({ }).countDocuments()
-            responseReturn(res, 200,{categorys,totalCategory})
-            
+            // Tạo base query với điều kiện tìm kiếm
+            const baseQuery = categoryModel.find(query).sort({ createdAt: -1 });
+
+            // Thực hiện queries
+            const [categorys, totalCategory] = await Promise.all([
+                // Clone query để thêm skip/limit nếu cần
+                limit ? baseQuery.clone().skip(skip).limit(limit) : baseQuery.clone(),
+                categoryModel.countDocuments(query)
+            ]);
+
+            responseReturn(res, 200, { categorys, totalCategory });
+
+        } catch (error) {
+            console.log('Error in get_category:', error.message);
+            responseReturn(res, 500, { error: 'Internal Server Error' });
         }
-        
-       } catch (error) {
-            console.log(error.message)
-       }
-
-
     }
 
     // end method 
 
+    /**
+     * Cập nhật thông tin danh mục
+     * @param {Request} req Request từ client
+     * @param {Response} res Response trả về client
+     */
+    update_category = async (req, res) => {
+        const form = formidable()
+        form.parse(req, async (err, fields, files) => {
+            if (err) {
+                responseReturn(res, 404, { error: 'something went wrong' })
+            } else {
+                let { name } = fields
+                let { image } = files
+                const { id } = req.params;
 
-update_category = async (req, res) => {
-    const form = formidable()
-    form.parse(req, async(err,fields,files)=>{
-    if (err) {
-        responseReturn(res, 404,{ error : 'something went wrong'})
-    } else {
-        let {name} = fields
-        let {image} = files
-        const {id} = req.params;
+                name = name.trim()
+                const slug = name.split(' ').join('-')
 
-        name = name.trim()
-        const slug = name.split(' ').join('-')
+                try {
+                    let result = null;
+                    if (image) {
+                        cloudinary.config({
+                            cloud_name: process.env.cloud_name,
+                            api_key: process.env.api_key,
+                            api_secret: process.env.api_secret,
+                            secure: true
+                        });
 
-    try {
-        let result = null;
-        if (image) {
-            cloudinary.config({
-                cloud_name: process.env.cloud_name,
-                api_key: process.env.api_key,
-                api_secret: process.env.api_secret,
-                secure: true
-            });
+                        result = await cloudinary.uploader.upload(image.filepath, { folder: 'categorys' })
+                    }
 
-              result = await cloudinary.uploader.upload(image.filepath, { folder: 'categorys'})
-        }
+                    const updateData = {
+                        name,
+                        slug,
+                    }
 
-        const updateData = {
-            name,
-            slug,
-        }
+                    if (result) {
+                        updateData.image = result.url;
+                    }
 
-        if (result) {
-            updateData.image = result.url;
-        }
-        
-        const category = await categoryModel.findByIdAndUpdate(id,updateData, { new: true});
-        responseReturn(res, 200, {category, message: 'Category Updated successfully'})
-                
-        } catch (error) {
-        responseReturn(res, 500,{ error : 'Internal Server Error'})
-        } 
+                    const category = await categoryModel.findByIdAndUpdate(id, updateData, { new: true });
+                    responseReturn(res, 200, { category, message: 'Category Updated successfully' })
 
+                } catch (error) {
+                    responseReturn(res, 500, { error: 'Internal Server Error' })
+                }
             }
-             
         })
     }
 
- // end method
+    // end method
 
- deleteCategory = async (req, res) => {
-    try {
-        const categoryId = req.params.id;
-        const deleteCategory = await categoryModel.findByIdAndDelete(categoryId);
+    /**
+     * Xóa danh mục
+     * @param {Request} req Request từ client
+     * @param {Response} res Response trả về client
+     */
+    deleteCategory = async (req, res) => {
+        try {
+            const categoryId = req.params.id;
+            const deleteCategory = await categoryModel.findByIdAndDelete(categoryId);
 
-        if (!deleteCategory) {
-            console.log(`Cateogry with id ${categoryId} not found`);
-            return res.status(404).json({ message: 'Category not found'});
+            if (!deleteCategory) {
+                console.log(`Category with id ${categoryId} not found`);
+                return responseReturn(res, 404, { error: 'Category not found' });
+            }
+            responseReturn(res, 200, { message: 'Category deleted successfully' });
+
+        } catch (error) {
+            console.log(`Error deleting category:`, error);
+            responseReturn(res, 500, { error: 'Internal Server Error' });
         }
-        res.status(200).json({message: 'Category deleted successfully'});
-        
-    } catch (error) {
-        console.log(`Error delete category with id ${categoryId}:`,error);
-        res.status(500).json({message: 'Internal Server Error'});
     }
 
- }
- // end method
-
-
-
+    // end method
 }
- 
 
 module.exports = new categoryController()

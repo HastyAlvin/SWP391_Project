@@ -148,30 +148,30 @@ class sellerController {
     const sellerId = req.id; // ID lấy từ authMiddleware
 
     try {
-        const seller = await sellerModel.findById(sellerId).select("+password");
-        if (!seller) {
-            return responseReturn(res, 404, { error: "Seller not found" });
-        }
+      const seller = await sellerModel.findById(sellerId).select("+password");
+      if (!seller) {
+        return responseReturn(res, 404, { error: "Seller not found" });
+      }
 
-        // Kiểm tra mật khẩu cũ
-        const isMatch = await bcrypt.compare(oldPassword, seller.password);
-        if (!isMatch) {
-            return responseReturn(res, 400, { error: "Old password is incorrect" });
-        }
+      // Kiểm tra mật khẩu cũ
+      const isMatch = await bcrypt.compare(oldPassword, seller.password);
+      if (!isMatch) {
+        return responseReturn(res, 400, { error: "Old password is incorrect" });
+      }
 
-        // Hash mật khẩu mới
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(newPassword, salt);
+      // Hash mật khẩu mới
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(newPassword, salt);
 
-        // Cập nhật mật khẩu
-        seller.password = hashedPassword;
-        await seller.save();
+      // Cập nhật mật khẩu
+      seller.password = hashedPassword;
+      await seller.save();
 
-        responseReturn(res, 200, { message: "Password changed successfully" });
+      responseReturn(res, 200, { message: "Password changed successfully" });
     } catch (error) {
-        responseReturn(res, 500, { error: error.message });
+      responseReturn(res, 500, { error: error.message });
     }
-};
+  };
 }
 
 module.exports = new sellerController();

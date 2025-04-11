@@ -1,200 +1,156 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import Pagination from '../Pagination';
-import { FaE } from 'react-icons/fa6';
-import { FaEdit, FaTrash } from 'react-icons/fa';
-import { FaImage } from "react-icons/fa";
-import { IoMdCloseCircle } from "react-icons/io";
-import { PropagateLoader } from 'react-spinners';
-import { overrideStyle } from '../../utils/utils';
-import { categoryAdd, messageClear, get_category, updateCategory, deleteCategory } from '../../store/Reducers/categoryReducer';
+import { FaEye, FaEdit, FaTrash } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
+import { get_category, deleteCategory, messageClear } from '../../store/Reducers/categoryReducer';
 import toast from 'react-hot-toast';
-import Search from '../components/Search';
+import Pagination from '../Pagination';
 
 const Category = () => {
+    const dispatch = useDispatch();
+    const { loader, successMessage, errorMessage, categorys, totalCategory } = useSelector(state => state.category);
 
-    const dispatch = useDispatch()
-    const { loader, successMessage, errorMessage, categorys } = useSelector(state => state.category)
-
-
-
-    const [currentPage, setCurrentPage] = useState(1)
-    const [searchValue, setSearchValue] = useState('')
-    const [parPage, setParPage] = useState(5)
-    const [show, setShow] = useState(false)
-    const [imageShow, setImage] = useState('')
-    const [isEdit, setIsEdit] = useState(false)
-    const [editId, setEditId] = useState(null)
-
-    const [state, setState] = useState({
-
-        name: '',
-        image: ''
-
-    })
-
-
-    const imageHandle = (e) => {
-        let files = e.target.files
-        if (files.length > 0) {
-            setImage(URL.createObjectURL(files[0]))
-            setState({
-                ...state,
-                image: files[0]
-            })
-        }
-    }
-
-
-    const addOrUpdateCategory = (e) => {
-        e.preventDefault()
-        if (isEdit) {
-            dispatch(updateCategory({ id: editId, ...state }))
-        } else {
-            dispatch(categoryAdd(state))
-        }
-
-        // console.log(state)
-    }
+    const [currentPage, setCurrentPage] = useState(1);
+    const [searchValue, setSearchValue] = useState('');
+    const [parPage, setParPage] = useState(5);
 
     useEffect(() => {
-
-        if (successMessage) {
-            toast.success(successMessage)
-            dispatch(messageClear())
-            setState({
-                name: '',
-                image: ''
-            })
-            setImage('')
-            setIsEdit(false)
-            setEditId(null)
-
-        }
-        if (errorMessage) {
-            toast.error(errorMessage)
-            dispatch(messageClear())
-        }
-
-
-    }, [successMessage, errorMessage, dispatch])
-
-    useEffect(() => {
-        const obj = {
+        dispatch(get_category({
             parPage: parseInt(parPage),
             page: parseInt(currentPage),
             searchValue
+        }));
+    }, [searchValue, currentPage, parPage, dispatch]);
+
+    useEffect(() => {
+        if (successMessage) {
+            toast.success(successMessage);
+            dispatch(messageClear());
+            // Refresh category list after successful operation
+            dispatch(get_category({
+                parPage: parseInt(parPage),
+                page: parseInt(currentPage),
+                searchValue
+            }));
         }
-        dispatch(get_category(obj))
-
-    }, [searchValue, currentPage, parPage])
-
-    /// Handle Edit Button 
-    const handleEdit = (category) => {
-        setState({
-            name: category.name,
-            image: category.image
-        })
-        setImage(category.image)
-        setEditId(category._id)
-        setIsEdit(true)
-        setShow(true)
-    }
-
-    const handleDelete = (id) => {
-        if (window.confirm('Are you sure to delete category?')) {
-            console.log("delete category id", id);
-            dispatch(deleteCategory(id));
+        if (errorMessage) {
+            toast.error(errorMessage);
+            dispatch(messageClear());
         }
-    }
+    }, [successMessage, errorMessage, dispatch, currentPage, parPage, searchValue]);
+
+    const handleDelete = async (id) => {
+        if (window.confirm('Are you sure you want to delete this category?')) {
+            await dispatch(deleteCategory(id));
+        }
+    };
 
     return (
-        <div className='px-2 lg:px-7 pt-5 bg-white text-black'>
-            <div className='flex lg:hidden justify-between items-center mb-5 p-4 bg-gray-100 rounded-md'>
-                <h1 className='font-semibold text-lg'>Category</h1>
-                <button onClick={() => setShow(true)} className='bg-blue-500 shadow-lg hover:shadow-blue-500/40 px-4 py-2 cursor-pointer text-white rounded-sm text-sm'>Add</button>
-            </div>
-            <div className='flex flex-wrap w-full'>
-                <div className='w-full lg:w-7/12'>
-                    <div className='w-full p-4 bg-gray-100 rounded-md'>
-                        <Search setParPage={setParPage} setSearchValue={setSearchValue} searchValue={searchValue} />
-                        <div className='relative overflow-x-auto'>
-                            <table className='w-full text-sm text-left'>
-                                <thead className='text-sm uppercase border-b border-gray-300'>
-                                    <tr>
-                                        <th scope='col' className='py-3 px-4'>No</th>
-                                        <th scope='col' className='py-3 px-4'>Image</th>
-                                        <th scope='col' className='py-3 px-4'>Name</th>
-                                        <th scope='col' className='py-3 px-4'>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {categorys.map((d, i) => (
-                                        <tr key={i} className='border-b border-gray-300'>
-                                            <td className='py-2 px-4'>{i + 1}</td>
-                                            <td className='py-2 px-4'>
-                                                <img className='w-[45px] h-[45px]' src={d.image} alt='' />
+        <div className="px-4 py-6">
+            <div className="w-full p-5 bg-white rounded-lg shadow-md">
+                <div className="flex justify-between items-center mb-6">
+                    <h1 className="text-2xl font-bold text-gray-800">Categories</h1>
+                    <Link to="/admin/dashboard/category/add" className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-all">
+                        Add New Category
+                    </Link>
+                </div>
+
+                {/* Filter & Search */}
+                <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
+                    <select
+                        onChange={(e) => {
+                            setParPage(parseInt(e.target.value));
+                            setCurrentPage(1); // Reset to first page when changing items per page
+                        }}
+                        value={parPage}
+                        className="px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    >
+                        <option value="5">5</option>
+                        <option value="10">10</option>
+                        <option value="15">15</option>
+                        <option value="20">20</option>
+                    </select>
+
+                    <input
+                        type="text"
+                        placeholder="Search categories..."
+                        value={searchValue}
+                        onChange={(e) => {
+                            setSearchValue(e.target.value);
+                            setCurrentPage(1); // Reset to first page when searching
+                        }}
+                        className="px-4 py-2 border border-gray-300 rounded-md bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 w-full md:w-64"
+                    />
+                </div>
+
+                {/* Categories Table */}
+                {loader ? (
+                    <div className="flex justify-center items-center h-40">
+                        <div className="animate-spin rounded-full h-10 w-10 border-4 border-blue-500 border-t-transparent"></div>
+                    </div>
+                ) : (
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-sm text-left text-gray-700">
+                            <thead className="text-xs uppercase bg-gray-100">
+                                <tr>
+                                    <th className="px-4 py-3">No.</th>
+                                    <th className="px-4 py-3">Image</th>
+                                    <th className="px-4 py-3">Name</th>
+                                    <th className="px-4 py-3">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {categorys && categorys.length > 0 ? (
+                                    categorys.map((category, index) => (
+                                        <tr key={category._id} className="border-b hover:bg-gray-50">
+                                            <td className="px-4 py-3">{index + 1 + (currentPage - 1) * parPage}</td>
+                                            <td className="px-4 py-3">
+                                                <img className="w-12 h-12 rounded-lg object-cover" src={category.image} alt={category.name} />
                                             </td>
-                                            <td className='py-2 px-4'>{d.name}</td>
-                                            <td className='py-2 px-4'>
-                                                <div className='flex items-center gap-4'>
-                                                    <Link className='p-2 bg-yellow-500 rounded hover:shadow-lg' onClick={() => handleEdit(d)}><FaEdit /></Link>
-                                                    <Link className='p-2 bg-red-500 rounded hover:shadow-lg' onClick={() => handleDelete(d._id)}><FaTrash /></Link>
+                                            <td className="px-4 py-3 font-medium">{category.name}</td>
+                                            <td className="px-4 py-3">
+                                                <div className="flex space-x-2">
+                                                    <Link to={`/admin/dashboard/category/details/${category._id}`} className="p-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">
+                                                        <FaEye />
+                                                    </Link>
+                                                    <Link to={`/admin/dashboard/category/edit/${category._id}`} className="p-2 bg-green-500 text-white rounded-md hover:bg-green-600">
+                                                        <FaEdit />
+                                                    </Link>
+                                                    <button
+                                                        onClick={() => handleDelete(category._id)}
+                                                        className="p-2 bg-red-500 text-white rounded-md hover:bg-red-600"
+                                                    >
+                                                        <FaTrash />
+                                                    </button>
                                                 </div>
                                             </td>
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                        <div className='w-full flex justify-end mt-4'>
-                            <Pagination
-                                pageNumber={currentPage}
-                                setPageNumber={setCurrentPage}
-                                totalItem={50}
-                                parPage={parPage}
-                                showItem={3}
-                            />
-                        </div>
+                                    ))
+                                ) : (
+                                    <tr>
+                                        <td colSpan="4" className="px-4 py-3 text-center">No categories found</td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
                     </div>
-                </div>
-                <div className={`w-[320px] lg:w-5/12 fixed ${show ? 'right-0' : '-right-[340px]'} z-50 top-0 transition-all duration-500 lg:relative lg:right-0`}> 
-                    <div className='w-full pl-5'>
-                        <div className='bg-gray-100 h-screen lg:h-auto px-3 py-2 lg:rounded-md'>
-                            <div className='flex justify-between items-center mb-4'>
-                                <h1 className='font-semibold text-xl mb-4 w-full text-center'>{isEdit ? 'Edit Category' : 'Add Category'}</h1>
-                                <div onClick={() => setShow(false)} className='block lg:hidden cursor-pointer'>
-                                    <IoMdCloseCircle />
-                                </div>
-                            </div>
-                            <form onSubmit={addOrUpdateCategory}>
-                                <div className='flex flex-col w-full gap-1 mb-3'>
-                                    <label htmlFor='name'>Category Name</label>
-                                    <input value={state.name} onChange={(e) => setState({ ...state, name: e.target.value })} className='px-4 py-2 outline-none bg-white border border-gray-300 rounded-md' type='text' id='name' name='category_name' placeholder='Category Name' />
-                                </div>
-                                <div>
-                                    <label className='flex justify-center items-center flex-col h-[238px] cursor-pointer border border-dashed hover:border-gray-500 w-full border-gray-300' htmlFor='image'>
-                                        {imageShow ? <img className='w-full h-full' src={imageShow} /> : <>
-                                            <span><FaImage /></span>
-                                            <span>Select Image</span>
-                                        </>}
-                                    </label>
-                                    <input onChange={imageHandle} className='hidden' type='file' name='image' id='image' />
-                                    <div className='mt-4'>
-                                        <button disabled={loader} className='bg-blue-500 w-full hover:shadow-lg text-white rounded-md px-7 py-2 mb-3'>
-                                            {loader ? <PropagateLoader color='#fff' /> : isEdit ? 'Update Category' : 'Add Category'}
-                                        </button>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
+                )}
+
+                {/* Pagination */}
+                {categorys && categorys.length > 0 && (
+                    <div className="flex justify-end mt-6">
+                        <Pagination
+                            pageNumber={currentPage}
+                            setPageNumber={setCurrentPage}
+                            totalItem={totalCategory}
+                            parPage={parPage}
+                            showItem={5}
+                        />
                     </div>
-                </div>
+                )}
             </div>
         </div>
     );
-    
 };
 
 export default Category;

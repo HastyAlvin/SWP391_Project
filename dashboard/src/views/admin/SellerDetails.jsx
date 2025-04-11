@@ -1,105 +1,158 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
-import { get_seller, seller_status_update, messageClear } from '../../store/Reducers/sellerReducer';
+import { useParams, Link } from 'react-router-dom';
+import { FaEdit, FaLock } from 'react-icons/fa';
+import { get_seller_details, messageClear } from '../../store/Reducers/adminReducer';
 import toast from 'react-hot-toast';
 
 const SellerDetails = () => {
-    const dispatch = useDispatch();
-    const { seller, successMessage } = useSelector(state => state.seller);
-    const { sellerId } = useParams();
-    const [status, setStatus] = useState('');
+  const dispatch = useDispatch();
+  const { sellerId } = useParams();
+  const { seller, successMessage, errorMessage, loader } = useSelector(state => state.admin);
 
-    useEffect(() => {
-        dispatch(get_seller(sellerId));
-    }, [sellerId]);
+  useEffect(() => {
+    dispatch(get_seller_details(sellerId));
+  }, [dispatch, sellerId]);
 
-    useEffect(() => {
-        if (successMessage) {
-            toast.success(successMessage);
-            dispatch(messageClear());
-        }
-    }, [successMessage]);
+  useEffect(() => {
+    if (successMessage) {
+      toast.success(successMessage);
+      dispatch(messageClear());
+    }
+    if (errorMessage) {
+      toast.error(errorMessage);
+      dispatch(messageClear());
+    }
+  }, [successMessage, errorMessage]);
 
-    useEffect(() => {
-        if (seller) {
-            setStatus(seller.status);
-        }
-    }, [seller]);
-
-    const submit = (e) => {
-        e.preventDefault();
-        dispatch(seller_status_update({ sellerId, status }));
-    };
-
+  if (loader) {
     return (
-        <div className="px-4 py-6">
-            <div className="w-full p-5 bg-white rounded-lg shadow-md">
-                <h1 className="text-2xl font-bold mb-4 text-gray-800">Seller Details</h1>
-                <div className="w-full flex flex-wrap">
-                    <div className="w-3/12 flex justify-center items-center py-3">
-                        <div>
-                            {seller?.image ? (
-                                <img className="w-full h-[230px] object-cover rounded-md" src={seller.image} alt="Seller" />
-                            ) : (
-                                <span className="text-gray-500">Image Not Uploaded</span>
-                            )}
-                        </div>
-                    </div>
-                    <div className="w-4/12 px-4">
-                        <h2 className="text-lg py-2 font-semibold text-gray-700">Basic Info</h2>
-                        <div className="p-4 bg-gray-100 rounded-md">
-                            {[ 
-                                { label: "Name", value: seller?.name },
-                                { label: "Email", value: seller?.email },
-                                { label: "Role", value: seller?.role },
-                                { label: "Status", value: seller?.status },
-                                { label: "Payment Status", value: seller?.payment },
-                            ].map((item, index) => (
-                                <div key={index} className="flex gap-2 font-medium text-gray-700 mb-2">
-                                    <span>{item.label}:</span>
-                                    <span>{item.value}</span>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                    <div className="w-4/12 px-4">
-                        <h2 className="text-lg py-2 font-semibold text-gray-700">Address</h2>
-                        <div className="p-4 bg-gray-100 rounded-md">
-                            {[ 
-                                { label: "Shop Name", value: seller?.shopInfo?.shopName },
-                                { label: "Division", value: seller?.shopInfo?.division },
-                                { label: "District", value: seller?.shopInfo?.district },
-                                { label: "State", value: seller?.shopInfo?.sub_district },
-                            ].map((item, index) => (
-                                <div key={index} className="flex gap-2 font-medium text-gray-700 mb-2">
-                                    <span>{item.label}:</span>
-                                    <span>{item.value}</span>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-                <form onSubmit={submit} className="mt-4">
-                    <div className="flex gap-4 py-3">
-                        <select
-                            value={status}
-                            onChange={(e) => setStatus(e.target.value)}
-                            className="px-4 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-700 focus:ring focus:ring-indigo-300"
-                            required
-                        >
-                            <option value="">--Select Status--</option>
-                            <option value="active">Active</option>
-                            <option value="deactive">Deactive</option>
-                        </select>
-                        <button className="bg-green-500 px-7 py-2 text-white rounded-md hover:shadow-md">
-                            Submit
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
+      <div className="flex justify-center items-center h-screen">
+        <div className="animate-spin rounded-full h-10 w-10 border-4 border-blue-500 border-t-transparent"></div>
+      </div>
     );
+  }
+
+  if (!seller) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="text-xl text-gray-600">Seller information not found</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="px-4 py-6">
+      <div className="w-full p-5 bg-white rounded-lg shadow-md">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-2xl font-bold text-gray-800">Seller Details</h1>
+          <div className="flex space-x-2">
+            <Link
+              to={`/admin/dashboard/seller/edit/${sellerId}`}
+              className="px-4 py-2 flex items-center gap-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-all"
+            >
+              <FaEdit /> Edit
+            </Link>
+            <Link
+              to={`/admin/dashboard/seller/change-password/${sellerId}`}
+              className="px-4 py-2 flex items-center gap-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600 transition-all"
+            >
+              <FaLock /> Change Password
+            </Link>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Profile Image */}
+          <div className="flex flex-col items-center">
+            <div className="w-40 h-40 rounded-full overflow-hidden mb-4 bg-gray-200 flex justify-center items-center">
+              {seller.image ? (
+                <img src={seller.image} alt={seller.name} className="w-full h-full object-cover" />
+              ) : (
+                <span className="text-4xl text-gray-400">{seller.name[0].toUpperCase()}</span>
+              )}
+            </div>
+            <h2 className="text-xl font-semibold text-gray-800">{seller.name}</h2>
+            <div className="mt-2 flex items-center">
+              <span className={`px-3 py-1 rounded-full text-sm font-medium ${seller.status === 'active' ? 'bg-green-100 text-green-800' :
+                seller.status === 'deactive' ? 'bg-red-100 text-red-800' :
+                  'bg-yellow-100 text-yellow-800'
+                }`}>
+                {seller.status === 'active' ? 'Active' :
+                  seller.status === 'deactive' ? 'Deactivated' : 'Pending'}
+              </span>
+            </div>
+          </div>
+
+          {/* Basic Information */}
+          <div className="space-y-4">
+            <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">Basic Information</h2>
+
+            <div className="grid grid-cols-1 gap-3">
+              <div className="flex">
+                <span className="font-medium text-gray-600 w-32">Email:</span>
+                <span className="text-gray-800">{seller.email}</span>
+              </div>
+              <div className="flex">
+                <span className="font-medium text-gray-600 w-32">Role:</span>
+                <span className="text-gray-800">{seller.role || 'Seller'}</span>
+              </div>
+              <div className="flex">
+                <span className="font-medium text-gray-600 w-32">Method:</span>
+                <span className="text-gray-800">{seller.method || 'N/A'}</span>
+              </div>
+              <div className="flex">
+                <span className="font-medium text-gray-600 w-32">Payment:</span>
+                <span className={`px-2 py-1 rounded-full text-xs font-medium ${seller.payment === 'active' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'
+                  }`}>
+                  {seller.payment === 'active' ? 'Activated' : 'Not Activated'}
+                </span>
+              </div>
+              <div className="flex">
+                <span className="font-medium text-gray-600 w-32">Created At:</span>
+                <span className="text-gray-800">
+                  {seller.createdAt ? new Date(seller.createdAt).toLocaleString() : 'N/A'}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Shop Information */}
+          <div className="space-y-4">
+            <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">Shop Information</h2>
+
+            <div className="grid grid-cols-1 gap-3">
+              <div className="flex">
+                <span className="font-medium text-gray-600 w-32">Shop Name:</span>
+                <span className="text-gray-800">{seller.shopInfo?.shopName || 'Not set'}</span>
+              </div>
+              <div className="flex">
+                <span className="font-medium text-gray-600 w-32">Province/City:</span>
+                <span className="text-gray-800">{seller.shopInfo?.division || 'Not set'}</span>
+              </div>
+              <div className="flex">
+                <span className="font-medium text-gray-600 w-32">District:</span>
+                <span className="text-gray-800">{seller.shopInfo?.district || 'Not set'}</span>
+              </div>
+              <div className="flex">
+                <span className="font-medium text-gray-600 w-32">Ward/Commune:</span>
+                <span className="text-gray-800">{seller.shopInfo?.sub_district || 'Not set'}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-8 flex justify-between">
+          <Link
+            to="/admin/dashboard/manage-sellers"
+            className="px-6 py-2.5 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-all"
+          >
+            Back
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default SellerDetails;
