@@ -69,36 +69,128 @@ export const seller_login = createAsyncThunk(
 
 // 🟢 Đổi mật khẩu
 export const customer_change_password = createAsyncThunk(
-    "auth/customer_change_password",
-    async (passwordData, { rejectWithValue, fulfillWithValue }) => {
-      try {
-        // Sử dụng endpoint "/customer/change-password" và withCredentials để gửi cookie
-        const { data } = await api.put("/customer/change-password", passwordData, {
+  "auth/customer_change_password",
+  async (passwordData, { rejectWithValue, fulfillWithValue }) => {
+    try {
+      // Sử dụng endpoint "/customer/change-password" và withCredentials để gửi cookie
+      const { data } = await api.put(
+        "/customer/change-password",
+        passwordData,
+        {
           withCredentials: true,
-        });
-        return fulfillWithValue(data);
-      } catch (error) {
-        return rejectWithValue(error.response.data);
-      }
+        }
+      );
+      return fulfillWithValue(data);
+    } catch (error) {
+      return rejectWithValue(error.response.data);
     }
-  );
+  }
+);
 
-  //Phân role 
-  const returnRole = (token) => {
-    if (token) {
-      const decodeToken = jwtDecode(token);
-      const expireTime = new Date(decodeToken.exp * 1000);
-      if (new Date() > expireTime) {
-        localStorage.removeItem("accessToken");
-        return "";
-      } else {
-        return decodeToken.role;
-      }
-    } else {
-      return "";
+export const get_user_info = createAsyncThunk(
+  "auth/get_user_info",
+  async (_, { rejectWithValue, fulfillWithValue }) => {
+    try {
+      const { data } = await api.get("/get-user", { withCredentials: true });
+      console.log("User: " + JSON.stringify(data));
+      return fulfillWithValue(data);
+    } catch (error) {
+      return rejectWithValue(error.response.data);
     }
-  };
-  
+  }
+);
+
+export const profile_image_upload = createAsyncThunk(
+  "auth/profile_image_upload",
+  async (image, { rejectWithValue, fulfillWithValue }) => {
+    try {
+      const { data } = await api.post("/profile-image-upload", image, {
+        withCredentials: true,
+      });
+      return fulfillWithValue(data);
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+export const seller_register = createAsyncThunk(
+  "auth/seller_register",
+  async (info, { rejectWithValue, fulfillWithValue }) => {
+    try {
+      const { data } = await api.post("/seller-register", info, {
+        withCredentials: true,
+      });
+      localStorage.setItem("accessToken", data.token);
+      return fulfillWithValue(data);
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+export const profile_info_add = createAsyncThunk(
+  "auth/profile_info_add",
+  async (info, { rejectWithValue, fulfillWithValue }) => {
+    try {
+      const { data } = await api.post("/profile-info-add", info, {
+        withCredentials: true,
+      });
+      return fulfillWithValue(data);
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+export const profile_info_update = createAsyncThunk(
+  "auth/profile_info_update",
+  async (info, { rejectWithValue, fulfillWithValue }) => {
+    try {
+      const { data } = await api.put("/profile-info-update", info, {
+        withCredentials: true,
+      });
+      return fulfillWithValue(data);
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+export const logout = createAsyncThunk(
+  "auth/logout",
+  async ({ navigate, role }, { rejectWithValue, fulfillWithValue }) => {
+    try {
+      const { data } = await api.get("/logout", { withCredentials: true });
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("customerToken");
+      if (role === "admin") {
+        navigate("/admin/login");
+      } else {
+        navigate("/login");
+      }
+      return fulfillWithValue(data);
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+//Phân role
+const returnRole = (token) => {
+  if (token) {
+    const decodeToken = jwtDecode(token);
+    const expireTime = new Date(decodeToken.exp * 1000);
+    if (new Date() > expireTime) {
+      localStorage.removeItem("accessToken");
+      return "";
+    } else {
+      return decodeToken.role;
+    }
+  } else {
+    return "";
+  }
+};
 
 // 🟢 Giải mã token
 const decodeToken = (token) => {
@@ -110,10 +202,15 @@ export const authReducer = createSlice({
   name: "auth",
   initialState: {
     loader: false,
-    userInfo: decodeToken(localStorage.getItem("customerToken")) || decodeToken(localStorage.getItem("accessToken")),
+    userInfo:
+      decodeToken(localStorage.getItem("customerToken")) ||
+      decodeToken(localStorage.getItem("accessToken")),
     errorMessage: "",
     successMessage: "",
-    role: returnRole(localStorage.getItem("accessToken")) || returnRole(localStorage.getItem("customerToken")), 
+    role:
+      returnRole(localStorage.getItem("accessToken")) ||
+      returnRole(localStorage.getItem("customerToken")),
+      token: localStorage.getItem("accessToken") || localStorage.getItem("customerToken"),
   },
   reducers: {
     messageClear: (state) => {
@@ -155,8 +252,8 @@ export const authReducer = createSlice({
         state.userInfo = decodeToken(payload.token);
         state.role = returnRole(payload.token);
       })
-       // Xử lý đăng nhập sellers
-       .addCase(seller_login.pending, (state) => {
+      // Xử lý đăng nhập sellers
+      .addCase(seller_login.pending, (state) => {
         state.loader = true;
       })
       .addCase(seller_login.rejected, (state, { payload }) => {
@@ -195,11 +292,53 @@ export const authReducer = createSlice({
       })
       .addCase(customer_change_password.fulfilled, (state, { payload }) => {
         state.loader = false;
-        state.successMessage = payload.message || "Password changed successfully!";
+        state.successMessage =
+          payload.message || "Password changed successfully!";
         // Sau khi đổi mật khẩu thành công, reset thông tin người dùng và xóa token để buộc đăng nhập lại
         state.userInfo = "";
         localStorage.removeItem("customerToken");
         localStorage.removeItem("accessToken");
+      })
+      .addCase(seller_register.pending, (state) => {
+        state.loader = true;
+      })
+      .addCase(seller_register.rejected, (state, { payload }) => {
+        state.loader = false;
+        state.errorMessage = payload.error;
+      })
+      .addCase(seller_register.fulfilled, (state, { payload }) => {
+        state.loader = false;
+        state.successMessage = payload.message;
+        state.token = payload.token;
+        state.role = returnRole(payload.token);
+      })
+      .addCase(get_user_info.fulfilled, (state, { payload }) => {
+        state.loader = false;
+        state.userInfo = payload.userInfo;
+      })
+      .addCase(profile_image_upload.pending, (state) => {
+        state.loader = true;
+      })
+      .addCase(profile_image_upload.fulfilled, (state, { payload }) => {
+        state.loader = false;
+        state.userInfo = payload.userInfo;
+        state.successMessage = payload.message;
+      })
+      .addCase(profile_info_add.pending, (state) => {
+        state.loader = true;
+      })
+      .addCase(profile_info_add.fulfilled, (state, { payload }) => {
+        state.loader = false;
+        state.userInfo = payload.userInfo;
+        state.successMessage = payload.message;
+      })
+      .addCase(profile_info_update.pending, (state) => {
+        state.loader = true;
+      })
+      .addCase(profile_info_update.fulfilled, (state, { payload }) => {
+        state.loader = false;
+        state.userInfo = payload.userInfo;
+        state.successMessage = payload.message;
       });
   },
 });

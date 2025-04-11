@@ -1,86 +1,231 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import api from "../../api/api"; 
+import api from "../../api/api";
+
+export const get_admin_orders = createAsyncThunk(
+  "orders/get_admin_orders",
+  async (
+    { parPage, page, searchValue },
+    { rejectWithValue, fulfillWithValue }
+  ) => {
+    try {
+      const { data } = await api.get(
+        `/admin/orders?page=${page}&searchValue=${searchValue}&parPage=${parPage}`,
+        { withCredentials: true }
+      );
+      return fulfillWithValue(data);
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+// End Method
+
+export const get_admin_order = createAsyncThunk(
+  "orders/get_admin_order",
+  async (orderId, { rejectWithValue, fulfillWithValue }) => {
+    try {
+      const { data } = await api.get(`/admin/order/${orderId}`, {
+        withCredentials: true,
+      });
+      return fulfillWithValue(data);
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+// End Method
+
+export const admin_order_status_update = createAsyncThunk(
+  "orders/admin_order_status_update",
+  async ({ orderId, info }, { rejectWithValue, fulfillWithValue }) => {
+    try {
+      const { data } = await api.put(
+        `/admin/order-status/update/${orderId}`,
+        info,
+        { withCredentials: true }
+      );
+      return fulfillWithValue(data);
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+// End Method
+
+export const get_seller_orders = createAsyncThunk(
+  "orders/get_seller_orders",
+  async (
+    { parPage, page, searchValue, sellerId },
+    { rejectWithValue, fulfillWithValue }
+  ) => {
+    try {
+      const { data } = await api.get(
+        `/seller/orders/${sellerId}?page=${page}&searchValue=${searchValue}&parPage=${parPage}`,
+        { withCredentials: true }
+      );
+      return fulfillWithValue(data);
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+// End Method
+
+export const get_seller_order = createAsyncThunk(
+  "orders/get_seller_order",
+  async (orderId, { rejectWithValue, fulfillWithValue }) => {
+    try {
+      const { data } = await api.get(`/seller/order/${orderId}`, {
+        withCredentials: true,
+      });
+      return fulfillWithValue(data);
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+// End Method
+
+export const seller_order_status_update = createAsyncThunk(
+  "orders/seller_order_status_update",
+  async ({ orderId, info }, { rejectWithValue, fulfillWithValue }) => {
+    try {
+      const { data } = await api.put(
+        `/seller/order-status/update/${orderId}`,
+        info,
+        { withCredentials: true }
+      );
+      return fulfillWithValue(data);
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+// End Method
 
 export const place_order = createAsyncThunk(
-    'order/place_order',
-    async({ price,products,shipping_fee,items,shippingInfo,userId,navigate}) => {
-        try {
-            const { data } = await api.post('/home/order/place-order',{
-                price,products,shipping_fee,items,shippingInfo,userId,navigate
-            })
-            navigate('/payment',{
-                state: {
-                    price:price + shipping_fee,
-                    items,
-                    orderId: data.orderId 
-                }
-            })
-            console.log(data)
-        } catch (error) {
-            console.log(error.response)
-        }
-        
+  "order/place_order",
+  async ({
+    price,
+    products,
+    shipping_fee,
+    items,
+    shippingInfo,
+    userId,
+    navigate,
+  }) => {
+    try {
+      const { data } = await api.post("/home/order/place-order", {
+        price,
+        products,
+        shipping_fee,
+        items,
+        shippingInfo,
+        userId,
+        navigate,
+      });
+      navigate("/payment", {
+        state: {
+          price: price + shipping_fee,
+          items,
+          orderId: data.orderId,
+        },
+      });
+      console.log(data);
+    } catch (error) {
+      console.log(error.response);
     }
-)
-// End Method 
+  }
+);
+// End Method
 
 export const get_orders = createAsyncThunk(
-    'order/get_orders',
-    async({customerId,status}, { rejectWithValue,fulfillWithValue }) => {
-        try {
-            const {data} = await api.get(`/home/coustomer/get-orders/${customerId}/${status}`) 
-            // console.log(data)
-            return fulfillWithValue(data)
-        } catch (error) {
-            return rejectWithValue(error.response.data)
-        }
+  "order/get_orders",
+  async ({ customerId, status }, { rejectWithValue, fulfillWithValue }) => {
+    try {
+      const { data } = await api.get(
+        `/home/coustomer/get-orders/${customerId}/${status}`
+      );
+      // console.log(data)
+      return fulfillWithValue(data);
+    } catch (error) {
+      return rejectWithValue(error.response.data);
     }
-)
-// End Method 
+  }
+);
+// End Method
 
 export const get_order_details = createAsyncThunk(
-    'order/get_order_details',
-    async(orderId , { rejectWithValue,fulfillWithValue }) => {
-        try {
-            const {data} = await api.get(`/home/coustomer/get-order-details/${orderId}`) 
-            // console.log(data)
-            return fulfillWithValue(data)
-        } catch (error) {
-            return rejectWithValue(error.response.data)
-        }
+  "order/get_order_details",
+  async (orderId, { rejectWithValue, fulfillWithValue }) => {
+    try {
+      const { data } = await api.get(
+        `/home/coustomer/get-order-details/${orderId}`
+      );
+      // console.log(data)
+      return fulfillWithValue(data);
+    } catch (error) {
+      return rejectWithValue(error.response.data);
     }
-)
-// End Method 
- 
-
+  }
+);
+// End Method
 
 export const orderReducer = createSlice({
-    name: 'order',
-    initialState:{
-        myOrders : [], 
-        errorMessage : '',
-        successMessage: '',  
-        myOrder : {},
+  name: "order",
+  initialState: {
+    myOrders: [],
+    errorMessage: "",
+    successMessage: "",
+    myOrder: {},
+    totalOrder: 0,
+    order: {},
+  },
+  reducers: {
+    messageClear: (state, _) => {
+      state.errorMessage = "";
+      state.successMessage = "";
     },
-    reducers : {
+  },
+  extraReducers: (builder) => {
+    builder
 
-        messageClear : (state,_) => {
-            state.errorMessage = ""
-            state.successMessage = ""
-        }
- 
-    },
-    extraReducers: (builder) => {
-        builder
-        
-        .addCase(get_orders.fulfilled, (state, { payload }) => { 
-            state.myOrders = payload.orders; 
-        })
-        .addCase(get_order_details.fulfilled, (state, { payload }) => { 
-            state.myOrder = payload.order; 
-        })
-        
-    }
-})
-export const {messageClear} = orderReducer.actions
-export default orderReducer.reducer
+      .addCase(get_orders.fulfilled, (state, { payload }) => {
+        state.myOrders = payload.orders;
+      })
+      .addCase(get_order_details.fulfilled, (state, { payload }) => {
+        state.myOrder = payload.order;
+      })
+      .addCase(get_admin_orders.fulfilled, (state, { payload }) => {
+        state.myOrders = payload.orders;
+        state.totalOrder = payload.totalOrder;
+      })
+      .addCase(get_admin_order.fulfilled, (state, { payload }) => {
+        state.order = payload.order;
+      })
+      .addCase(admin_order_status_update.rejected, (state, { payload }) => {
+        state.errorMessage = payload.message;
+      })
+      .addCase(admin_order_status_update.fulfilled, (state, { payload }) => {
+        state.successMessage = payload.message;
+      })
+
+      .addCase(get_seller_orders.fulfilled, (state, { payload }) => {
+        state.myOrders = payload.orders;
+        state.totalOrder = payload.totalOrder;
+      })
+      .addCase(get_seller_order.fulfilled, (state, { payload }) => {
+        state.order = payload.order;
+      })
+
+      .addCase(seller_order_status_update.rejected, (state, { payload }) => {
+        state.errorMessage = payload.message;
+      })
+      .addCase(seller_order_status_update.fulfilled, (state, { payload }) => {
+        state.successMessage = payload.message;
+      });
+  },
+});
+export const { messageClear } = orderReducer.actions;
+export default orderReducer.reducer;
