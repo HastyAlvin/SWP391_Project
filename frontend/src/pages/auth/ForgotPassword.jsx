@@ -2,7 +2,7 @@ import React from "react";
 import { Modal, Input, Button, Typography, Form, Steps } from "antd";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
-import { setForgotPassword } from "../../store/Reducers/userSlice.js";
+import { setForgotPassword } from "../../store/reducers/userSlice.js";
 import OtpInput from "./OTPInput.jsx";
 import {
   showAutoCloseAlert,

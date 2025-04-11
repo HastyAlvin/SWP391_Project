@@ -4,7 +4,7 @@ import { PropagateLoader } from 'react-spinners';
 import toast from 'react-hot-toast';
 import { useDispatch, useSelector } from 'react-redux';
 import { overrideStyle } from '../../utils/utils';
-import { seller_login, messageClear } from '../../store/Reducers/authReducer';
+import { seller_login, messageClear } from '../../store/reducers/authReducer';
 import ForgotPassword from "./ForgotPassword.jsx";
 
 const Login = () => {
