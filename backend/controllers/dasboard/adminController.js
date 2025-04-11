@@ -16,25 +16,36 @@ class adminController {
     try {
       let query = {};
 
-      // Áp dụng tìm kiếm nếu có giá trị
+      // Tối ưu tìm kiếm với nhiều trường
       if (searchValue) {
-        query.$text = { $search: searchValue };
+        query.$or = [
+          { name: { $regex: searchValue, $options: 'i' } }
+        ];
       }
 
-      // Áp dụng bộ lọc trạng thái nếu không phải "all" 
       if (status !== "all") {
         query.status = status;
       }
 
-      // Lấy danh sách người bán với phân trang
-      const sellers = await sellerModel
-        .find(query)
-        .skip(skipPage)
-        .limit(parPage)
-        .sort({ createdAt: -1 });
+      // Sử dụng aggregation để tối ưu hiệu suất
+      const [result] = await sellerModel.aggregate([
+        { $match: query },
+        {
+          $facet: {
+            sellers: [
+              { $sort: { createdAt: -1 } },
+              { $skip: skipPage },
+              { $limit: parPage }
+            ],
+            totalCount: [
+              { $count: 'count' }
+            ]
+          }
+        }
+      ]);
 
-      // Đếm tổng số người bán phù hợp với truy vấn
-      const totalSeller = await sellerModel.find(query).countDocuments();
+      const sellers = result.sellers;
+      const totalSeller = result.totalCount[0]?.count || 0;
 
       responseReturn(res, 200, { totalSeller, sellers });
     } catch (error) {

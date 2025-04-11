@@ -4,6 +4,9 @@ const OrderDetails = lazy(() => import("../../views/admin/OrderDetails"));
 const AdminDashboard = lazy(() => import("../../views/admin/AdminDashboard"));
 const Orders = lazy(() => import("../../views/admin/Order"));
 const Category = lazy(() => import("../../views/admin/Category"));
+const CategoryAdd = lazy(() => import("../../views/admin/category/CategoryAdd"));
+const CategoryDetails = lazy(() => import("../../views/admin/category/CategoryDetails"));
+const CategoryEdit = lazy(() => import("../../views/admin/category/CategoryEdit"));
 const DeactiveSellers = lazy(() => import("../../views/admin/DeactiveSellers"));
 const SellerRequest = lazy(() => import("../../views/admin/SellerRequest"));
 const SellerDetails = lazy(() => import("../../views/admin/SellerDetails"));
@@ -36,6 +39,21 @@ export const adminRoutes = [
   {
     path: "admin/dashboard/category",
     element: <Category />,
+    role: "admin",
+  },
+  {
+    path: "admin/dashboard/category/add",
+    element: <CategoryAdd />,
+    role: "admin",
+  },
+  {
+    path: "admin/dashboard/category/details/:categoryId",
+    element: <CategoryDetails />,
+    role: "admin",
+  },
+  {
+    path: "admin/dashboard/category/edit/:categoryId",
+    element: <CategoryEdit />,
     role: "admin",
   },
   {
