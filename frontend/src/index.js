@@ -10,13 +10,14 @@ import { BrowserRouter, Route } from "react-router-dom";
 
 
 const App = lazy(() => import("./App"));
-
+const App2 = lazy(() => import("./App2"));
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <BrowserRouter>
     <Provider store={store}>
       <Suspense>
         <App />
+        <App2 />
         <Toaster
           toastOptions={{
             position: "top-right",
