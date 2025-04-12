@@ -90,7 +90,7 @@ const Login = () => {
                         <div className='px-8 py-8'>
                             <h2 className='text-center w-full text-xl text-slate-600 font-bold'>Login </h2>
 
-                            <div style={ }>
+                            <div >
                                 <form onSubmit={login} className='text-slate-600'>
 
 

@@ -7,6 +7,7 @@ const cloudinary = require("cloudinary").v2;
 const formidable = require("formidable");
 const { clearOTP, verifyOTP } = require("../utiles/otpStore.js");
 const { sendEmail } = require("../utiles/email.js");
+const customerModel = require("../models/customerModel.js");
 
 class authControllers {
   admin_login = async (req, res) => {
@@ -267,6 +268,23 @@ class authControllers {
       res.status(200).json({ message: "Password successfully updated" });
     } catch (error) {
       res.status(500).json({ error: error.message });
+    }
+  };
+
+  getAllNewCustomer = async (req, res) => {
+    try {
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+      const customers = await customerModel.find({
+        createdAt: { $gte: sevenDaysAgo }
+      }).lean();
+      const total = customers.length; 
+      responseReturn(res, 200, { 
+        totalNewCustomers: total,
+      });
+    } catch (error) {
+      console.error(error);
+      responseReturn(res, 500, { error: "Internal Server Error" });
     }
   };
 }
