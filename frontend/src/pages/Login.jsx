@@ -90,7 +90,7 @@ const Login = () => {
                         <div className='px-8 py-8'>
                             <h2 className='text-center w-full text-xl text-slate-600 font-bold'>Login </h2>
 
-                            <div>
+                            <div style={ }>
                                 <form onSubmit={login} className='text-slate-600'>
 
 
@@ -118,13 +118,13 @@ const Login = () => {
                                         Login As an Admin
                                     </button>
                                 </form>
-                                <div className='flex justify-center items-center py-2'>
-                                    <div className='h-[1px] bg-slate-300 w-[95%]'> </div>
-                                    <span className='px-3 text-slate-600'>Or</span>
-                                    <div className='h-[1px] bg-slate-300 w-[95%]'> </div>
-                                </div>
-                            </div>
 
+                            </div>
+                            <div className='flex justify-center items-center py-2'>
+                                <div className='h-[1px] bg-slate-300 w-[95%]'> </div>
+                                <span className='px-3 text-slate-600'>Or</span>
+                                <div className='h-[1px] bg-slate-300 w-[95%]'> </div>
+                            </div>
                             <div className='text-center text-slate-600 pt-1'>
                                 <p>Don't Have An Account ? <Link className='text-blue-500' to='/register'> Register</Link> </p>
                             </div>
