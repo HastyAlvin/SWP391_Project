@@ -23,9 +23,11 @@ const Shops = () => {
         dispatch(price_range_product())
     },[])
     useEffect(() => { 
-        setState({
-            values: [priceRange.low, priceRange.high]
-        })
+        if (priceRange.low < priceRange.high) {
+            setState({
+                values: [priceRange.low, priceRange.high]
+            })
+        }
     },[priceRange])
 
     const [filter, setFilter] = useState(true) 
@@ -114,28 +116,29 @@ const Shops = () => {
         </div>
 
         <div className='py-2 flex flex-col gap-5'>
-            <h2 className='text-3xl font-bold mb-3 text-slate-600'>Price</h2>
-             
-             <Range
-                step={5}
-                min={priceRange.low}
-                max={priceRange.high}
-                values={(state.values)}
-                onChange={(values) => setState({values})}
-                renderTrack={({props,children}) => (
-                    <div {...props} className='w-full h-[6px] bg-slate-200 rounded-full cursor-pointer'>
-                        {children}
-                    </div>
-                )}
-                renderThumb={({ props }) => (
-                    <div className='w-[15px] h-[15px] bg-[#059473] rounded-full' {...props} />
-    
-                )} 
-             />  
-         <div>
-         <span className='text-slate-800 font-bold text-lg'>${Math.floor(state.values[0])} - ${Math.floor(state.values[1])}</span>  
-           </div>
-         </div>
+    <h2 className='text-3xl font-bold mb-3 text-slate-600'>Price</h2>
+    {/* Kiểm tra priceRange.low < priceRange.high trước khi render Range */}
+    {priceRange.low < priceRange.high && (
+        <Range
+            step={5}
+            min={priceRange.low}
+            max={priceRange.high}
+            values={state.values}
+            onChange={(values) => setState({ values })}
+            renderTrack={({ props, children }) => (
+                <div {...props} className='w-full h-[6px] bg-slate-200 rounded-full cursor-pointer'>
+                    {children}
+                </div>
+            )}
+            renderThumb={({ props }) => (
+                <div className='w-[15px] h-[15px] bg-[#059473] rounded-full' {...props} />
+            )}
+        />
+    )}
+    <div>
+        <span className='text-slate-800 font-bold text-lg'>${Math.floor(state.values[0])} - ${Math.floor(state.values[1])}</span>
+    </div>
+</div>
 
          <div className='py-3 flex flex-col gap-4'>
             <h2 className='text-3xl font-bold mb-3 text-slate-600'>Rating </h2>
