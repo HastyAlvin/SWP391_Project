@@ -109,12 +109,12 @@ const Login = () => {
 
                                 </form>
                                 <form onSubmit={sellerLogin} className='text-slate-600'>
-                                    <button className='px-8 w-full py-2 bg-[#02e3e0] shadow hover:shadow-red-500/50 text-white rounded-md flex justify-center items-center gap-2 mb-3'>
+                                    <button className='px-8 w-full py-2 bg-[#059473] shadow hover:shadow-red-500/50 text-white rounded-md flex justify-center items-center gap-2 mb-3'>
                                         Login As a Seller
                                     </button>
                                 </form>
                                 <form onSubmit={adminLogin} className='text-slate-600'>
-                                    <button className='px-8 w-full py-2 bg-[#02e3e0] shadow hover:shadow-red-500/50 text-white rounded-md flex justify-center items-center gap-2 mb-3'>
+                                    <button className='px-8 w-full py-2 bg-[#059473] shadow hover:shadow-red-500/50 text-white rounded-md flex justify-center items-center gap-2 mb-3'>
                                         Login As an Admin
                                     </button>
                                 </form>
