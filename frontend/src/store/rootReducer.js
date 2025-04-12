@@ -3,6 +3,7 @@ import cardReducer from "./reducers/cardReducer";
 import dashboardReducer from "./reducers/dashboardReducer";
 import homeReducer from "./reducers/homeReducer";
 import orderReducer from "./reducers/orderReducer";
+
 // import OrderReducer from "./reducers/OrderReducer";
 import PaymentReducer from "./reducers/PaymentReducer";
 // import authReducer from "./reducers/authReducer";
@@ -29,6 +30,5 @@ const rootReducer = {
     payment: PaymentReducer,
     // dashboard: dashboardReducer,
     banner: bannerReducer
-
 }
 export default rootReducer;

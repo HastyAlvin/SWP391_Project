@@ -160,16 +160,12 @@ const Card = () => {
            <button onClick={() => dispatch(delete_card_product(p._id)) }  className='px-5 py-[3px] bg-red-500 text-white'>Delete</button>
        </div>
    </div>
-
-
                    </div>)
                    }
                   </div>           
-
                     </div>
                 }            
- 
-                        </div> 
+                     </div> 
                     </div>
                 </div>
 
@@ -190,7 +186,6 @@ const Card = () => {
                 <input className='w-full px-3 py-2 border border-slate-200 outline-0 focus:border-green-500 rounded-sm' type="text" placeholder='Input Vauchar Coupon' />
                 <button className='px-5 py-[1px] bg-[#059473] text-white rounded-sm uppercase text-sm'>Apply</button>
                 </div>
-
                 <div className='flex justify-between items-center'>
                     <span>Total</span>
                     <span className='text-lg text-[#059473]'>${price + shipping_fee} </span>
