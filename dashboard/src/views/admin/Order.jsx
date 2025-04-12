@@ -59,7 +59,9 @@ const Order = () => {
             <thead className="text-xs uppercase bg-gray-100">
               <tr>
                 <th className="px-4 py-3">Order ID</th>
-                <th className="px-4 py-3">Price</th>
+                <th className="px-4 py-3">Customer</th>
+                <th className="px-4 py-3">Date</th>
+                <th className="px-4 py-3">Total</th>
                 <th className="px-4 py-3">Payment Status</th>
                 <th className="px-4 py-3">Order Status</th>
                 <th className="px-4 py-3">Action</th>
@@ -71,6 +73,8 @@ const Order = () => {
                 <React.Fragment key={o._id}>
                   <tr className="border-b hover:bg-gray-50">
                     <td className="px-4 py-3 font-medium">#{o._id}</td>
+                    <td className="px-4 py-3">{o.shippingInfo.name}</td>
+                    <td className="px-4 py-3">{o.date}</td>
                     <td className="px-4 py-3">${o.price}</td>
                     <td className="px-4 py-3">{o.payment_status}</td>
                     <td className="px-4 py-3">{o.delivery_status}</td>
@@ -95,19 +99,76 @@ const Order = () => {
                   </tr>
                   {show === o._id && (
                     <tr>
-                      <td colSpan="6" className="bg-gray-50">
-                        <div className="px-4 py-2">
-                          {o.suborder.map((so) => (
-                            <div
-                              key={so._id}
-                              className="flex gap-4 py-2 border-b last:border-0"
-                            >
-                              <div className="w-1/4">#{so._id}</div>
-                              <div className="w-1/4">${so.price}</div>
-                              <div className="w-1/4">{so.payment_status}</div>
-                              <div className="w-1/4">{so.delivery_status}</div>
+                      <td colSpan="8" className="bg-gray-50">
+                        <div className="px-4 py-4">
+                          {/* Shipping Information */}
+                          <div className="mb-4">
+                            <h3 className="font-semibold text-lg mb-2">Shipping Information</h3>
+                            <div className="grid grid-cols-2 gap-4">
+                              <div>
+                                <p><span className="font-medium">Name:</span> {o.shippingInfo.name}</p>
+                                <p><span className="font-medium">Phone:</span> {o.shippingInfo.phone}</p>
+                                <p><span className="font-medium">Address:</span> {o.shippingInfo.address}</p>
+                              </div>
+                              <div>
+                                <p><span className="font-medium">City:</span> {o.shippingInfo.city}</p>
+                                <p><span className="font-medium">Province:</span> {o.shippingInfo.province}</p>
+                                <p><span className="font-medium">Post Code:</span> {o.shippingInfo.post}</p>
+                              </div>
                             </div>
-                          ))}
+                          </div>
+
+                          {/* Products Information */}
+                          <div className="mb-4">
+                            <h3 className="font-semibold text-lg mb-2">Products</h3>
+                            <div className="space-y-3">
+                              {o.products.map((p) => (
+                                <div key={p._id} className="flex items-center gap-4 border-b pb-3">
+                                  <img src={p.images[0]} alt={p.name} className="w-16 h-16 object-cover rounded" />
+                                  <div className="flex-1">
+                                    <h4 className="font-medium">{p.name}</h4>
+                                    <p className="text-sm text-gray-600">
+                                      Quantity: {p.quantity} × ${p.price}
+                                    </p>
+                                    <p className="text-sm text-gray-600">
+                                      Shop: {p.shopName}
+                                    </p>
+                                  </div>
+                                  <div className="text-right">
+                                    <p className="font-medium">${p.price * p.quantity}</p>
+                                    <p className="text-sm text-gray-600">
+                                      Discount: {p.discount}%
+                                    </p>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Suborders */}
+                          <div>
+                            <h3 className="font-semibold text-lg mb-2">Suborders</h3>
+                            <div className="bg-white rounded border">
+                              {o.suborder.map((so) => (
+                                <div key={so._id} className="p-3 border-b last:border-0">
+                                  <div className="flex justify-between items-center mb-2">
+                                    <span className="font-medium">#{so._id}</span>
+                                    <span className="text-sm text-gray-600">{so.date}</span>
+                                  </div>
+                                  <div className="grid grid-cols-3 gap-4 text-sm">
+                                    <div>
+                                      <p><span className="font-medium">Price:</span> ${so.price}</p>
+                                      <p><span className="font-medium">Status:</span> {so.delivery_status}</p>
+                                    </div>
+                                    <div>
+                                      <p><span className="font-medium">Payment:</span> {so.payment_status}</p>
+                                      <p><span className="font-medium">Shipping:</span> {so.shippingInfo}</p>
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
                         </div>
                       </td>
                     </tr>

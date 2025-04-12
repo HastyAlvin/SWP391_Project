@@ -6,7 +6,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { get_banners } from '../store/reducers/homeReducer';
 
 const Banner = () => {
-
     const dispatch = useDispatch()
     const { banners } = useSelector(state => state.home)
 
@@ -31,7 +30,7 @@ const Banner = () => {
 
     useEffect(() => {
         dispatch(get_banners())
-    }, [])
+    }, [dispatch])
 
     return (
         <div className='w-full md-lg:mt-6'>
@@ -45,12 +44,19 @@ const Banner = () => {
                                 arrows={true}
                                 showDots={true}
                                 responsive={responsive}
+                                autoPlaySpeed={4000}
+                                keyBoardControl={true}
+                                transitionDuration={500}
                             >
-                                {
-                                    banners.length > 0 && banners.map((b, i) => <Link key={i} to={`product/details/${b.link}`}>
-                                        <img src={b.banner} alt="" className="w-full h-[400px] object-cover" />
-                                    </Link>)
-                                }
+                                {banners.length > 0 && banners.map((banner, i) => (
+                                    <Link key={i} to={`/product/details/${banner.link}`} className="block w-full">
+                                        <img
+                                            src={banner.banner}
+                                            alt={`Banner ${i + 1}`}
+                                            className="w-full h-[400px] object-cover rounded-lg"
+                                        />
+                                    </Link>
+                                ))}
                             </Carousel>
                         </div>
                     </div>

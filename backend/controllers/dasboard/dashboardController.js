@@ -8,6 +8,7 @@ const sellerWallet = require("../../models/sellerWallet");
 const authOrder = require('../../models/authOrder')
 // const sellerCustomerMessage = require('../../models/chat/sellerCustomerMessage')
 const bannerModel = require("../../models/bannerModel");
+const customerModel = require("../../models/customerModel");
 const {
   mongo: { ObjectId },
 } = require("mongoose");
@@ -71,21 +72,22 @@ class dashboardController {
         .countDocuments();
 
       const totalOrder = await authOrder.find({
-          sellerId: new ObjectId(id) }).countDocuments()
+        sellerId: new ObjectId(id)
+      }).countDocuments()
 
-      const totalPendingOrder = await authOrder .find({
-          $and:[
-              {
-                  sellerId: {
-                      $eq: new ObjectId(id)
-                  }
-              },
-              {
-                  delivery_status :{
-                      $eq: 'pending'
-                  }
-              }
-          ]
+      const totalPendingOrder = await authOrder.find({
+        $and: [
+          {
+            sellerId: {
+              $eq: new ObjectId(id)
+            }
+          },
+          {
+            delivery_status: {
+              $eq: 'pending'
+            }
+          }
+        ]
       }).countDocuments()
       // const messages = await sellerCustomerMessage.find({
       //     $or: [
@@ -102,7 +104,7 @@ class dashboardController {
       // }).limit(3)
 
       const recentOrders = await authOrder.find({
-          sellerId: new ObjectId(id)
+        sellerId: new ObjectId(id)
       }).limit(5)
 
       responseReturn(res, 200, {
@@ -201,6 +203,35 @@ class dashboardController {
   };
   //end Method
 
+  delete_banner = async (req, res) => {
+    const { bannerId } = req.params;
+    try {
+      const banner = await bannerModel.findById(bannerId);
+      if (banner) {
+        // Delete image from cloudinary
+        let temp = banner.banner.split("/");
+        temp = temp[temp.length - 1];
+        const imageName = temp.split(".")[0];
+
+        cloudinary.config({
+          cloud_name: process.env.cloud_name,
+          api_key: process.env.api_key,
+          api_secret: process.env.api_secret,
+          secure: true,
+        });
+
+        await cloudinary.uploader.destroy(imageName);
+        await bannerModel.findByIdAndDelete(bannerId);
+        responseReturn(res, 200, { bannerId, message: "Banner deleted successfully" });
+      } else {
+        responseReturn(res, 404, { error: "Banner not found" });
+      }
+    } catch (error) {
+      responseReturn(res, 500, { error: error.message });
+    }
+  };
+  //end Method
+
   get_banners = async (req, res) => {
     try {
       const banners = await bannerModel.aggregate([
@@ -215,6 +246,72 @@ class dashboardController {
       responseReturn(res, 500, { error: error.message });
     }
   };
+  //end Method
+
+  get_analytics_data = async (req, res) => {
+    try {
+      // Get products by category
+      const productsByCategory = await productModel.aggregate([
+        {
+          $group: {
+            _id: "$category",
+            count: { $sum: 1 },
+            totalValue: { $sum: "$price" }
+          }
+        }
+      ]);
+
+      // Get seller statistics
+      const sellerStats = await sellerModel.aggregate([
+        {
+          $group: {
+            _id: "$status",
+            count: { $sum: 1 }
+          }
+        }
+      ]);
+
+      // Get total customers
+      const totalCustomers = await customerModel.countDocuments();
+
+      // Get top rated products
+      const topProducts = await productModel.aggregate([
+        {
+          $sort: { rating: -1 }
+        },
+        {
+          $limit: 5
+        },
+        {
+          $project: {
+            name: 1,
+            rating: 1,
+            price: 1,
+            category: 1
+          }
+        }
+      ]);
+
+      responseReturn(res, 200, {
+        productStats: {
+          byCategory: productsByCategory,
+        },
+        sellerStats: {
+          total: sellerStats.reduce((acc, curr) => acc + curr.count, 0),
+          byStatus: sellerStats
+        },
+        customerStats: {
+          total: totalCustomers
+        },
+        topRatedProducts: topProducts
+      });
+
+    } catch (error) {
+      console.log(error.message);
+      responseReturn(res, 500, { error: error.message });
+    }
+  };
+
   //end Method
 }
 

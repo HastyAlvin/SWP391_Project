@@ -22,7 +22,7 @@ export const get_banner = createAsyncThunk(
     async (productId, { rejectWithValue, fulfillWithValue }) => {
         try {
 
-            const { data } = await api.get(`/banner/get/${productId}`, { withCredentials: true })
+            const { data } = await api.get(`/banners/get/${productId}`, { withCredentials: true })
             return fulfillWithValue(data)
         } catch (error) {
             return rejectWithValue(error.response.data)
@@ -37,7 +37,7 @@ export const update_banner = createAsyncThunk(
     async ({ bannerId, info }, { rejectWithValue, fulfillWithValue }) => {
         try {
 
-            const { data } = await api.put(`/banner/update/${bannerId}`, info, { withCredentials: true })
+            const { data } = await api.put(`/banners/update/${bannerId}`, info, { withCredentials: true })
             return fulfillWithValue(data)
         } catch (error) {
             return rejectWithValue(error.response.data)
@@ -47,6 +47,29 @@ export const update_banner = createAsyncThunk(
 
 // End Method 
 
+export const get_banners = createAsyncThunk(
+    'banner/get_banners',
+    async (_, { rejectWithValue, fulfillWithValue }) => {
+        try {
+            const { data } = await api.get('/banners', { withCredentials: true })
+            return fulfillWithValue(data)
+        } catch (error) {
+            return rejectWithValue(error.response.data)
+        }
+    }
+)
+
+export const delete_banner = createAsyncThunk(
+    'banner/delete_banner',
+    async (bannerId, { rejectWithValue, fulfillWithValue }) => {
+        try {
+            const { data } = await api.delete(`/banners/delete/${bannerId}`, { withCredentials: true })
+            return fulfillWithValue(data)
+        } catch (error) {
+            return rejectWithValue(error.response.data)
+        }
+    }
+)
 
 export const bannerReducer = createSlice({
     name: 'banner',
@@ -96,6 +119,30 @@ export const bannerReducer = createSlice({
                 state.loader = false;
                 state.successMessage = payload.message;
                 state.banner = payload.banner;
+            })
+
+            .addCase(get_banners.pending, (state, { payload }) => {
+                state.loader = true;
+            })
+            .addCase(get_banners.rejected, (state, { payload }) => {
+                state.loader = false;
+                state.errorMessage = payload.error;
+            })
+            .addCase(get_banners.fulfilled, (state, { payload }) => {
+                state.loader = false;
+                state.banners = payload.banners;
+            })
+            .addCase(delete_banner.pending, (state, { payload }) => {
+                state.loader = true;
+            })
+            .addCase(delete_banner.rejected, (state, { payload }) => {
+                state.loader = false;
+                state.errorMessage = payload.error;
+            })
+            .addCase(delete_banner.fulfilled, (state, { payload }) => {
+                state.loader = false;
+                state.successMessage = payload.message;
+                state.banners = state.banners.filter(b => b._id !== payload.bannerId);
             })
 
 
