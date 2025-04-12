@@ -79,16 +79,6 @@ const ManageCustomers = () => {
         {/* Filter & Search */}
         <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
           <div className="flex items-center gap-4">
-            <select
-              onChange={e => setStatus(e.target.value)}
-              value={status}
-              className="px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            >
-              <option value="all">All</option>
-              <option value="active">Active</option>
-              <option value="deactive">Deactive</option>
-              <option value="pending">Pending</option>
-            </select>
 
             <select
               onChange={e => setParPage(parseInt(e.target.value))}
