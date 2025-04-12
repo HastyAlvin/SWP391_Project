@@ -60,33 +60,48 @@ class productController {
     /// end method 
 
     products_get = async (req, res) => {
-        const { page, searchValue, parPage } = req.query
+        // Lấy các tham số từ query string
+        const { page = 1, searchValue, parPage = 10 } = req.query
         const { id } = req;
 
-        const skipPage = parseInt(parPage) * (parseInt(page) - 1)
-
         try {
-
-            if (searchValue) {
-                const products = await productModel.find({
-                    $text: { $search: searchValue },
-                    sellerId: id
-                }).skip(skipPage).limit(parPage).sort({ createdAt: -1 })
-                const totalProduct = await productModel.find({
-                    $text: { $search: searchValue },
-                    sellerId: id
-                }).countDocuments()
-                responseReturn(res, 200, { products, totalProduct })
-            } else {
-                const products = await productModel.find({ sellerId: id }).skip(skipPage).limit(parPage).sort({ createdAt: -1 })
-                const totalProduct = await productModel.find({ sellerId: id }).countDocuments()
-                responseReturn(res, 200, { products, totalProduct })
+            // Kiểm tra id người bán
+            if (!id) {
+                return responseReturn(res, 400, { error: 'Seller ID is required' });
             }
 
-        } catch (error) {
-            console.log(error.message)
-        }
+            // Tính toán số trang cần bỏ qua cho phân trang
+            const skipPage = parseInt(parPage) * (parseInt(page) - 1);
 
+            // Tạo query cơ bản với điều kiện sellerId
+            const query = { sellerId: id };
+
+            // Thêm điều kiện tìm kiếm theo tên nếu có searchValue
+            if (searchValue?.trim()) {
+                query.name = { $regex: searchValue.trim(), $options: 'i' }; // i: không phân biệt hoa thường
+            }
+
+            // Thực thi song song query lấy sản phẩm và đếm tổng số sản phẩm
+            const [products, totalProduct] = await Promise.all([
+                productModel.find(query)
+                    .skip(skipPage)
+                    .limit(parseInt(parPage))
+                    .sort({ createdAt: -1 }) // Sắp xếp theo thời gian tạo mới nhất
+                    .select('-__v'),
+                productModel.countDocuments(query)
+            ]);
+
+            // Trả về kết quả
+            responseReturn(res, 200, {
+                products,
+                totalProduct,
+                currentPage: parseInt(page),
+                perPage: parseInt(parPage)
+            });
+
+        } catch (error) {
+            responseReturn(res, 500, { error: error.message });
+        }
     }
 
     // End Method 
@@ -109,7 +124,7 @@ class productController {
 
         try {
             await productModel.findByIdAndUpdate(productId, {
-                name, description, stock, price, discount, brand, productId, slug,category
+                name, description, stock, price, discount, brand, productId, slug, category
             })
             const product = await productModel.findById(productId)
             responseReturn(res, 200, { product, message: 'Product Updated Successfully' })
