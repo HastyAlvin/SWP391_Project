@@ -23,6 +23,11 @@ const CustomerDetails = lazy(() => import("../../views/admin/CustomerDetails"));
 const AddCustomer = lazy(() => import("../../views/admin/AddCustomer"));
 const EditCustomer = lazy(() => import("../../views/admin/EditCustomer"));
 
+// Banner management components
+const BannerList = lazy(() => import("../../views/admin/banners/BannerList"));
+const BannerAdd = lazy(() => import("../../views/admin/banners/BannerAdd"));
+const BannerEdit = lazy(() => import("../../views/admin/banners/BannerEdit"));
+
 export const adminRoutes = [
   {
     path: "admin/dashboard",
@@ -129,6 +134,23 @@ export const adminRoutes = [
   {
     path: "admin/dashboard/customer/edit/:customerId",
     element: <EditCustomer />,
+    role: "admin",
+  },
+
+  // Các routes quản lý banner
+  {
+    path: "admin/dashboard/banners",
+    element: <BannerList />,
+    role: "admin",
+  },
+  {
+    path: "admin/dashboard/banner/add",
+    element: <BannerAdd />,
+    role: "admin",
+  },
+  {
+    path: "admin/dashboard/banner/edit/:bannerId",
+    element: <BannerEdit />,
     role: "admin",
   },
 ];

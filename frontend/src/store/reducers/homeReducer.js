@@ -107,18 +107,14 @@ export const get_banners = createAsyncThunk(
     'banner/get_banners',
     async (_, { fulfillWithValue }) => {
         try {
-            const { data } = await api.get(`/banners`)
-            //  console.log(data)
+            const { data } = await api.get('/banners/get')
             return fulfillWithValue(data)
         } catch (error) {
-            console.log(error.respone)
+            console.log(error.response)
         }
     }
 )
 // End Method 
-
-
-
 
 export const homeReducer = createSlice({
     name: 'home',
